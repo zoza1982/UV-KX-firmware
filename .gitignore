@@ -12,3 +12,7 @@ k5_eeprom.raw
 f4hwn
 f4hwn.*
 !archive/f4hwn*
+_build/*
+_tmp_chirp/*
+_old_code/*
+__Makefile

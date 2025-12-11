@@ -18,7 +18,7 @@
 
 #include "driver/st7565.h"
 #include "printf.h"
-#include "font.h"
+//#include "font.h"
 #include "ui/helper.h"
 #include "ui/inputbox.h"
 #include "misc.h"
@@ -80,6 +80,13 @@ void UI_PrintStringBuffer(const char *pString, uint8_t * buffer, uint32_t char_w
 
 void UI_PrintString(const char *pString, uint8_t Start, uint8_t End, uint8_t Line, uint8_t Width)
 {
+    // void unused parameter
+    (void)pString;
+    (void)Start;
+    (void)End;
+    (void)Line;
+    (void)Width;
+    
     size_t i;
     size_t Length = strlen(pString);
 
@@ -92,8 +99,8 @@ void UI_PrintString(const char *pString, uint8_t Start, uint8_t End, uint8_t Lin
         if (pString[i] > ' ' && pString[i] < 127)
         {
             const unsigned int index = pString[i] - ' ' - 1;
-            memcpy(gFrameBuffer[Line + 0] + ofs, &gFontBig[index][0], 7);
-            memcpy(gFrameBuffer[Line + 1] + ofs, &gFontBig[index][7], 7);
+            //memcpy(gFrameBuffer[Line + 0] + ofs, &gFontBig[index][0], 7);
+            //memcpy(gFrameBuffer[Line + 1] + ofs, &gFontBig[index][7], 7);
         }
     }
 }
@@ -113,12 +120,17 @@ void UI_PrintStringSmall(const char *pString, uint8_t Start, uint8_t End, uint8_
 
 void UI_PrintStringSmallNormal(const char *pString, uint8_t Start, uint8_t End, uint8_t Line)
 {
-    UI_PrintStringSmall(pString, Start, End, Line, ARRAY_SIZE(gFontSmall[0]), (const uint8_t *)gFontSmall);
+    // void unused parameter
+    (void)pString;
+    (void)Start;
+    (void)End;
+    (void)Line;
+    //UI_PrintStringSmall(pString, Start, End, Line, ARRAY_SIZE(gFontSmall[0]), (const uint8_t *)gFontSmall);
 }
 
 void UI_PrintStringSmallBold(const char *pString, uint8_t Start, uint8_t End, uint8_t Line)
 {
-#ifdef ENABLE_SMALL_BOLD
+/*#ifdef ENABLE_SMALL_BOLD
     const uint8_t *font = (uint8_t *)gFontSmallBold;
     const uint8_t char_width = ARRAY_SIZE(gFontSmallBold[0]);
 #else
@@ -126,29 +138,40 @@ void UI_PrintStringSmallBold(const char *pString, uint8_t Start, uint8_t End, ui
     const uint8_t char_width = ARRAY_SIZE(gFontSmall[0]);
 #endif
 
-    UI_PrintStringSmall(pString, Start, End, Line, char_width, font);
+    UI_PrintStringSmall(pString, Start, End, Line, char_width, font);*/
+    // void unused parameter
+    (void)pString;
+    (void)Start;
+    (void)End;
+    (void)Line;    
 }
 
 void UI_PrintStringSmallBufferNormal(const char *pString, uint8_t * buffer)
 {
-    UI_PrintStringBuffer(pString, buffer, ARRAY_SIZE(gFontSmall[0]), (uint8_t *)gFontSmall);
+    //UI_PrintStringBuffer(pString, buffer, ARRAY_SIZE(gFontSmall[0]), (uint8_t *)gFontSmall);
+    // void unused parameter
+    (void)pString;
+    (void)buffer;
 }
 
 void UI_PrintStringSmallBufferBold(const char *pString, uint8_t * buffer)
 {
-#ifdef ENABLE_SMALL_BOLD
+/*#ifdef ENABLE_SMALL_BOLD
     const uint8_t *font = (uint8_t *)gFontSmallBold;
     const uint8_t char_width = ARRAY_SIZE(gFontSmallBold[0]);
 #else
     const uint8_t *font = (uint8_t *)gFontSmall;
     const uint8_t char_width = ARRAY_SIZE(gFontSmall[0]);
 #endif
-    UI_PrintStringBuffer(pString, buffer, char_width, font);
+    UI_PrintStringBuffer(pString, buffer, char_width, font);*/
+    // void unused parameter
+    (void)pString;
+    (void)buffer;
 }
 
 void UI_DisplayFrequency(const char *string, uint8_t X, uint8_t Y, bool center)
 {
-    const unsigned int char_width  = 13;
+    /*const unsigned int char_width  = 13;
     uint8_t           *pFb0        = gFrameBuffer[Y] + X;
     uint8_t           *pFb1        = pFb0 + 128;
     bool               bCanDisplay = false;
@@ -178,7 +201,12 @@ void UI_DisplayFrequency(const char *string, uint8_t X, uint8_t Y, bool center)
         }
         pFb0 += char_width;
         pFb1 += char_width;
-    }
+    }*/
+   // void unused parameter
+    (void)string;
+    (void)X;
+    (void)Y;
+    (void)center;    
 }
 
 /*
@@ -272,7 +300,7 @@ static void sort(int16_t *a, int16_t *b)
 
     void GUI_DisplaySmallest(const char *pString, uint8_t x, uint8_t y,
                                     bool statusbar, bool fill) {
-      uint8_t c;
+      /*uint8_t c;
       uint8_t pixels;
       const uint8_t *p = (const uint8_t *)pString;
 
@@ -291,7 +319,13 @@ static void sort(int16_t *a, int16_t *b)
           }
         }
         x += 4;
-      }
+      }*/
+     // void unused parameter
+        (void)pString;
+        (void)x;
+        (void)y;
+        (void)statusbar;
+        (void)fill;
     }
 #endif
     

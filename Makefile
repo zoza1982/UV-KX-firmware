@@ -16,18 +16,18 @@ ENABLE_UART                     ?= 1
 ENABLE_AIRCOPY                  ?= 0
 ENABLE_NOAA                     ?= 0
 ENABLE_VOICE                    ?= 0
-ENABLE_VOX                      ?= 1
+ENABLE_VOX                      ?= 0
 ENABLE_ALARM                    ?= 0
 ENABLE_TX1750                   ?= 1
 ENABLE_PWRON_PASSWORD           ?= 0
 ENABLE_DTMF_CALLING             ?= 0
-ENABLE_FLASHLIGHT               ?= 1
+ENABLE_FLASHLIGHT               ?= 0
 
 # ---- CUSTOM MODS ----
 ENABLE_SPECTRUM                 ?= 0
-ENABLE_BIG_FREQ                 ?= 1
-ENABLE_SMALL_BOLD               ?= 1
-ENABLE_CUSTOM_MENU_LAYOUT       ?= 1
+ENABLE_BIG_FREQ                 ?= 0
+ENABLE_SMALL_BOLD               ?= 0
+ENABLE_CUSTOM_MENU_LAYOUT       ?= 0
 ENABLE_KEEP_MEM_NAME            ?= 1
 ENABLE_WIDE_RX                  ?= 1
 ENABLE_TX_WHEN_AM               ?= 0
@@ -40,8 +40,8 @@ ENABLE_NO_CODE_SCAN_TIMEOUT     ?= 1
 ENABLE_AM_FIX                   ?= 1
 ENABLE_SQUELCH_MORE_SENSITIVE   ?= 1
 ENABLE_FASTER_CHANNEL_SCAN      ?= 1
-ENABLE_RSSI_BAR                 ?= 1
-ENABLE_AUDIO_BAR                ?= 1
+ENABLE_RSSI_BAR                 ?= 0
+ENABLE_AUDIO_BAR                ?= 0
 ENABLE_COPY_CHAN_TO_VFO         ?= 1
 ENABLE_REDUCE_LOW_MID_TX_POWER  ?= 0
 ENABLE_BYP_RAW_DEMODULATORS     ?= 0
@@ -66,7 +66,7 @@ ENABLE_FEAT_F4HWN_CHARGING_C    ?= 0
 ENABLE_FEAT_F4HWN_SLEEP         ?= 1
 ENABLE_FEAT_F4HWN_RESUME_STATE  ?= 1
 ENABLE_FEAT_F4HWN_NARROWER      ?= 1
-ENABLE_FEAT_F4HWN_INV           ?= 1
+ENABLE_FEAT_F4HWN_INV           ?= 0
 ENABLE_FEAT_F4HWN_CTR           ?= 1
 ENABLE_FEAT_F4HWN_RESCUE_OPS    ?= 0
 ENABLE_FEAT_F4HWN_VOL           ?= 0
@@ -494,8 +494,8 @@ directories:
 	$(call ensure_dir,$(BIN))
 
 #------------------------------------------------------------------------------
-#$(U8G2_OBJS)
-OBJECTS = $(ASM_OBJS) $(CMSIS_OBJS) $(PRINTF_OBJS) $(APP_OBJS)
+
+OBJECTS = $(ASM_OBJS) $(CMSIS_OBJS) $(PRINTF_OBJS) $(U8G2_OBJS) $(APP_OBJS)
 
 -include $(OBJECTS:.o=.d)
 

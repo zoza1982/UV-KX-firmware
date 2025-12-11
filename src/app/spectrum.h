@@ -28,7 +28,7 @@
 #include "driver/system.h"
 #include "driver/systick.h"
 #include "printf.h"
-#include "font.h"
+//#include "font.h"
 #include "helper/battery.h"
 #include "misc.h"
 #include "radio.h"

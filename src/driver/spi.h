@@ -19,6 +19,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "dp32g030/spi.h"
 
 typedef struct {
     uint8_t MSTR;

@@ -35,7 +35,7 @@
 #include "driver/flash.h"
 #include "driver/gpio.h"
 #include "driver/system.h"
-#include "driver/st7565.h"
+#include "driver/u8g2_hal.h"
 #include "frequencies.h"
 #include "helper/battery.h"
 #include "misc.h"
@@ -493,7 +493,8 @@ void BOARD_Init(void)
     BOARD_GPIO_Init();
     BACKLIGHT_InitHardware();
     BOARD_ADC_Init();
-    ST7565_Init();
+    //ST7565_Init();
+    U8G2_HAL_Init();
 #ifdef ENABLE_FMRADIO
     BK1080_Init0();
 #endif

@@ -6,10 +6,7 @@
 #include "dp32g030/gpio.h"
 #include "dp32g030/spi.h"
 
-#include "font/font_8_tr.h"
-
 u8g2_t u8g2;
-
 
 uint8_t u8x8_gpio_and_delay_cb(__attribute__((unused)) u8x8_t* u8g2, uint8_t msg, uint8_t arg_int, __attribute__((unused)) void* arg_ptr) {
     switch (msg)
@@ -72,10 +69,6 @@ void U8G2_HAL_Init(void) {
     u8g2_InitDisplay(&u8g2); // send init sequence to the display, display is in sleep mode after this,
     u8g2_SetPowerSave(&u8g2, 0); // wake up display
     //u8g2_SetContrast(&u8g2, 128);
-    //u8g2_ClearDisplay(&u8g2);
+    u8g2_ClearDisplay(&u8g2);
 
-    u8g2_ClearBuffer(&u8g2);
-    u8g2_SetFont(&u8g2, u8g2_font_8_tr);
-    u8g2_DrawStr(&u8g2, 10, 10, "HELLO UV-KX !");
-    u8g2_SendBuffer(&u8g2);
 }

@@ -17,39 +17,54 @@
 #include <string.h>
 
 #include "driver/eeprom.h"
-#include "driver/st7565.h"
 #include "printf.h"
-#include "helper/battery.h"
 #include "settings.h"
 #include "misc.h"
-#include "ui/helper.h"
 #include "ui/welcome.h"
-#include "ui/status.h"
 #include "version.h"
-#include "bitmaps.h"
-
-#ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
-    #include "screenshot.h"
-#endif
+#include "ui/gui.h"
 
 void UI_DisplayReleaseKeys(void)
 {
-    memset(gStatusLine,  0, sizeof(gStatusLine));
-#if defined(ENABLE_FEAT_F4HWN_CTR) || defined(ENABLE_FEAT_F4HWN_INV)
-        ST7565_ContrastAndInv();
-#endif
-    UI_DisplayClear();
+    UI_ClearDisplay();
+    UI_SetBlackColor();
 
-    UI_PrintString("RELEASE", 0, 127, 1, 10);
-    UI_PrintString("ALL KEYS", 0, 127, 3, 10);
-
-    ST7565_BlitStatusLine();  // blank status line
-    ST7565_BlitFullScreen();
+    UI_DrawPopupWindow(20, 20, 88, 28, "Info");
+    UI_SetFont(FONT_8B_TR);
+    UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 36, true, false, false, "RELEASE");
+    UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 44, true, false, false, "ALL KEYS");
+    UI_UpdateDisplay();
 }
 
 void UI_DisplayWelcome(void)
 {
-    char WelcomeString0[16];
+    UI_ClearDisplay();
+    UI_SetBlackColor();
+    UI_SetFont(FONT_8B_TR);
+
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 10, true, false, false, "Hello !");
+
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 20, true, false, false, "UV-Kx Open Firmware");
+
+    UI_DrawBatteryIcon(BATTERY_VoltsToPercent(gBatteryVoltageAverage), 20, 30);
+
+    UI_SetFont(FONT_8_TR);
+    UI_DrawStrf(8, 42, "%i%% %u.%02uV", BATTERY_VoltsToPercent(gBatteryVoltageAverage), gBatteryVoltageAverage / 100, gBatteryVoltageAverage % 100);
+
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 64, 0, 42, true, false, false, "EEPROM");
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 64, 0, 51, true, false, false, "FM");
+
+    UI_SetFont(FONT_5_TR);
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 42, true, false, false, "64");
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 51, true, false, false, "YES");
+
+    UI_DrawBox(0, 57, 128, 7);
+    UI_DrawString(UI_TEXT_ALIGN_CENTER, 0, 128, 63, false, false, false, AUTHOR_STRING_2 " - " VERSION_STRING_2 " - " EDITION_STRING " EDITION");
+
+    UI_UpdateDisplay();
+
+
+    /*char WelcomeString0[16];
     char WelcomeString1[16];
     char WelcomeString2[16];
     char WelcomeString3[20];
@@ -133,78 +148,10 @@ void UI_DisplayWelcome(void)
         sprintf(WelcomeString3, "%s Edition", Edition);
         UI_PrintStringSmallNormal(WelcomeString3, 0, 127, 6);
 
-        /*
-        #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-            #if ENABLE_FEAT_F4HWN_RESCUE_OPS > 1
-                UI_PrintStringSmallNormal(Edition, 18, 0, 6);
-                if(gEeprom.MENU_LOCK == true) {
-                    memcpy(gFrameBuffer[6] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));
-                }
-                else
-                {
-                    memcpy(gFrameBuffer[6] + 103, BITMAP_NotReady, sizeof(BITMAP_NotReady));                    
-                }
-            #else
-                UI_PrintStringSmallNormal(Edition, 18, 0, 5);
-                memcpy(gFrameBuffer[5] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));
-                
-                #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-                    UI_PrintStringSmallNormal("RescueOps", 18, 0, 6);
-                    if(gEeprom.MENU_LOCK == true) {
-                        memcpy(gFrameBuffer[6] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));
-                    }
-                    else
-                    {
-                        memcpy(gFrameBuffer[6] + 103, BITMAP_NotReady, sizeof(BITMAP_NotReady));
-                    }
-                #endif
-            #endif
-        #else
-            UI_PrintStringSmallNormal(Edition, 18, 0, 6);
-            memcpy(gFrameBuffer[6] + 103, BITMAP_Ready, sizeof(BITMAP_Ready));                    
-        #endif
-        */
-
-        /*
-        #ifdef ENABLE_SPECTRUM
-            #ifdef ENABLE_FMRADIO
-                    UI_PrintStringSmallNormal(Based, 0, 127, 5);
-                    UI_PrintStringSmallNormal(Credits, 0, 127, 6);
-            #else
-                    UI_PrintStringSmallNormal("Bandscope  ", 0, 127, 5);
-                    memcpy(gFrameBuffer[5] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-
-                    #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-                        UI_PrintStringSmallNormal("RescueOps  ", 0, 127, 6);
-                        if(gEeprom.MENU_LOCK == true) {
-                            memcpy(gFrameBuffer[6] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-                        }
-                    #else
-                        UI_PrintStringSmallNormal("Broadcast  ", 0, 127, 6);
-                    #endif
-            #endif
-        #else
-            #ifdef ENABLE_FEAT_F4HWN_RESCUE_OPS
-                UI_PrintStringSmallNormal("RescueOps  ", 0, 127, 5);
-                if(gEeprom.MENU_LOCK == true) {
-                    memcpy(gFrameBuffer[5] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-                }
-            #else
-                UI_PrintStringSmallNormal("Bandscope  ", 0, 127, 5);
-            #endif
-            UI_PrintStringSmallNormal("Broadcast  ", 0, 127, 6);
-            memcpy(gFrameBuffer[6] + 95, BITMAP_Ready, sizeof(BITMAP_Ready));
-        #endif
-        */
 #else
         UI_PrintStringSmallNormal(Version, 0, 127, 6);
 #endif
-
-        //ST7565_BlitStatusLine();  // blank status line : I think it's useless
         ST7565_BlitFullScreen();
 
-        #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
-            getScreenShot(true);
-        #endif
-    }
+    }*/
 }

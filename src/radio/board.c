@@ -44,6 +44,8 @@
     #include "sram-overlay.h"
 #endif
 
+#include "ui/gui.h"
+
 #if defined(ENABLE_OVERLAY)
     void BOARD_FLASH_Init(void)
     {
@@ -495,6 +497,7 @@ void BOARD_Init(void)
     BOARD_ADC_Init();
     //ST7565_Init();
     U8G2_HAL_Init();
+    UI_Init(&u8g2);
 #ifdef ENABLE_FMRADIO
     BK1080_Init0();
 #endif

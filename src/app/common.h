@@ -5,6 +5,7 @@
 #include "functions.h"
 #include "settings.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 void COMMON_KeypadLockToggle();
 void COMMON_SwitchVFOs();

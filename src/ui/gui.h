@@ -34,6 +34,7 @@ typedef enum {
     UI_INFO_UART_COMM = 3
 } UI_InfoMessageType;
 
+
 #define UI_TX_STR   "TX"
 #define UI_RX_STR   "RX"
 #define UI_HZ_STR   "Hz"

@@ -74,11 +74,11 @@ void UI_DisplayWelcome(void)
 #if defined(ENABLE_FEAT_F4HWN_CTR) || defined(ENABLE_FEAT_F4HWN_INV)
         ST7565_ContrastAndInv();
 #endif
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
 #ifdef ENABLE_FEAT_F4HWN
     ST7565_BlitStatusLine();
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
     
     if (gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_NONE || gEeprom.POWER_ON_DISPLAY_MODE == POWER_ON_DISPLAY_MODE_SOUND) {
         ST7565_FillScreen(0x00);
@@ -151,7 +151,7 @@ void UI_DisplayWelcome(void)
 #else
         UI_PrintStringSmallNormal(Version, 0, 127, 6);
 #endif
-        ST7565_BlitFullScreen();
+        UI_UpdateDisplay();
 
     }*/
 }

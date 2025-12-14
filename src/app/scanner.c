@@ -27,6 +27,7 @@
 #include "settings.h"
 #include "ui/inputbox.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 DCS_CodeType_t    gScanCssResultType;
 uint8_t           gScanCssResultCode;

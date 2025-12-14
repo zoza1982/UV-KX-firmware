@@ -39,6 +39,7 @@
 #include "settings.h"
 #include "ui/status.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 FUNCTION_Type_t gCurrentFunction;
 

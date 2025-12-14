@@ -30,6 +30,7 @@
 #include "misc.h"
 #include "settings.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 
 BEEP_Type_t gBeepToPlay = BEEP_NONE;

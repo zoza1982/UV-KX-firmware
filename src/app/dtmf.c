@@ -33,6 +33,7 @@
 #include "misc.h"
 #include "settings.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 char              gDTMF_String[15];
 

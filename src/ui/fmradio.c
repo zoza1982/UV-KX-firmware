@@ -28,12 +28,13 @@
 #include "ui/helper.h"
 #include "ui/inputbox.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 void UI_DisplayFM(void)
 {
     char String[16] = {0};
     char *pPrintStr = String;
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
     UI_PrintString("FM", 2, 0, 0, 8);
 
@@ -90,13 +91,13 @@ void UI_DisplayFM(void)
         }
 
         UI_DisplayFrequency(String, 36, 1, gInputBoxIndex == 0);  // frequency
-        ST7565_BlitFullScreen();
+        UI_UpdateDisplay();
         return;
     }
 
     UI_PrintString(String, 0, 127, 1, 10);
 
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }
 
 #endif

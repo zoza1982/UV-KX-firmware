@@ -30,6 +30,7 @@
 #include "settings.h"
 #include "ui/menu.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 BOOT_Mode_t BOOT_GetMode(void)
 {

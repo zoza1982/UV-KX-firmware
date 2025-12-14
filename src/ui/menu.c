@@ -38,7 +38,7 @@
 #include "inputbox.h"
 #include "menu.h"
 #include "ui.h"
-
+#include "ui/gui.h"
 
 const t_menu_item MenuList[] =
 {
@@ -505,7 +505,7 @@ void UI_DisplayMenu(void)
     char               Contact[16];
 #endif
 
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
 #ifdef ENABLE_FEAT_F4HWN
     UI_DrawLineBuffer(gFrameBuffer, 48, 0, 48, 55, 1); // Be ware, status zone = 8 lines, the rest = 56 ->total 64
@@ -1340,5 +1340,5 @@ void UI_DisplayMenu(void)
         UI_PrintString(pPrintStr, menu_item_x1, menu_item_x2, 5, 8);
     }
 
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }

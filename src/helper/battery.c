@@ -25,6 +25,7 @@
 #include "ui/battery.h"
 #include "ui/menu.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 //#include "debugging.h"
 
 uint16_t          gBatteryCalibration[6];

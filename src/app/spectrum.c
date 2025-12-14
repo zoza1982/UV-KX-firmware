@@ -17,6 +17,7 @@
 #include "am_fix.h"
 #include "audio.h"
 #include "misc.h"
+#include "ui/gui.h"
 
 #ifdef ENABLE_SCAN_RANGES
 #include "chFrScanner.h"
@@ -1508,7 +1509,7 @@ static void RenderStill()
 
 static void Render()
 {
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
     switch (currentState)
     {
@@ -1523,7 +1524,7 @@ static void Render()
         break;
     }
 
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }
 
 bool HandleUserInput()

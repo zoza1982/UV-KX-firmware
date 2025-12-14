@@ -38,6 +38,8 @@
 #include "ui/ui.h"
 #include "audio.h"
 
+#include "ui/gui.h"
+
 #ifdef ENABLE_FEAT_F4HWN
     #include "driver/system.h"
 #endif
@@ -233,7 +235,7 @@ void UI_DisplayAudioBar(void)
         DrawLevelBar(2, line, barsOld, 25);
 
         if (gCurrentFunction == FUNCTION_TRANSMIT)
-            ST7565_BlitFullScreen();
+            UI_UpdateDisplay();
     }
 }
 #endif
@@ -416,7 +418,7 @@ void DisplayRSSIBar(const bool now)
         memset(pLine, 0, 23);
     DrawSmallAntennaAndBars(pLine, Level);
     if (now)
-        ST7565_BlitFullScreen();
+        UI_UpdateDisplay();
 #endif
 
 }
@@ -532,52 +534,58 @@ void UI_DisplayMain(void)
     center_line = CENTER_LINE_NONE;
 
     // clear the screen
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
     if(gLowBattery && !gLowBatteryConfirmed) {
-        UI_DisplayPopup("LOW BATTERY");
-        ST7565_BlitFullScreen();
+        UI_SetInfoMessage(UI_INFO_LOW_BATTERY);
+        UI_UpdateDisplay();
         return;
     }
 
-#ifndef ENABLE_FEAT_F4HWN
     if (gEeprom.KEY_LOCK && gKeypadLocked > 0)
     {   // tell user how to unlock the keyboard
-        UI_PrintString("Long press #", 0, LCD_WIDTH, 1, 8);
-        UI_PrintString("to unlock",    0, LCD_WIDTH, 3, 8);
-        ST7565_BlitFullScreen();
+        UI_DrawPopupWindow(20, 20, 88, 28, "Info");
+        UI_SetFont(FONT_8B_TR);
+        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 36, true, false, false, "Long press #");
+        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 44, true, false, false, "to unlock");
+        UI_UpdateDisplay();
         return;
     }
-#else
-    if (gEeprom.KEY_LOCK && gKeypadLocked > 0)
-    {   // tell user how to unlock the keyboard
-        uint8_t shift = 3;
-
-        /*
-        BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, true);
-        SYSTEM_DelayMs(50);
-        BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, false);
-        SYSTEM_DelayMs(50);
-        */
-
-        if(isMainOnly())
-        {
-            shift = 5;
-        }
-        //memcpy(gFrameBuffer[shift] + 2, gFontKeyLock, sizeof(gFontKeyLock));
-        UI_PrintStringSmallBold("UNLOCK KEYBOARD", 12, 0, shift);
-        //memcpy(gFrameBuffer[shift] + 120, gFontKeyLock, sizeof(gFontKeyLock));
-
-        /*
-        for (uint8_t i = 12; i < 116; i++)
-        {
-            gFrameBuffer[shift][i] ^= 0xFF;
-        }
-        */
-    }
-#endif
 
     unsigned int activeTxVFO = gRxVfoIsActive ? gEeprom.RX_VFO : gEeprom.TX_VFO;
+
+    UI_SetBlackColor();
+    UI_DrawBox(0, 0, 128, 7);
+
+    UI_SetFont(FONT_8B_TR);
+
+    SETTINGS_FetchChannelName(String, gEeprom.ScreenChannel[0]);
+    if (String[0] == 0)
+    {   // no channel name, show the channel number instead
+        sprintf(String, "CH-%03u", gEeprom.ScreenChannel[0] + 1);
+    }
+
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, 6, false, false, false, String);
+
+    uint32_t displayFreqVFO1 = gEeprom.VfoInfo[0].pRX->Frequency;
+    uint32_t displayFreqVFO2 = gEeprom.VfoInfo[1].pRX->Frequency;
+
+    UI_DrawFrequencyBig(false, displayFreqVFO1, 111, 19);
+
+
+    uint8_t vfoBY = 28;
+
+    SETTINGS_FetchChannelName(String, gEeprom.ScreenChannel[1]);
+    if (String[0] == 0)
+    {   // no channel name, show the channel number instead
+        sprintf(String, "CH-%03u", gEeprom.ScreenChannel[1] + 1);
+    }
+
+    UI_SetBlackColor();
+    UI_DrawBox(0, vfoBY, 128, 7);
+    UI_DrawFrequencySmall(false, displayFreqVFO2, 126, vfoBY + 17);
+    UI_SetFont(FONT_5_TR);
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, vfoBY + 6, false, false, false, String);
 
     for (unsigned int vfo_num = 0; vfo_num < 2; vfo_num++)
     {
@@ -1512,7 +1520,7 @@ void UI_DisplayMain(void)
     //#endif
 #endif
 
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }
 
 // ***************************************************************************

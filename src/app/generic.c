@@ -36,6 +36,7 @@
 #include "settings.h"
 #include "ui/inputbox.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 void GENERIC_Key_F(bool bKeyPressed, bool bKeyHeld)
 {

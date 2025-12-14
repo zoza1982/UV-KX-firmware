@@ -41,7 +41,7 @@ void UI_DisplayAircopy(void)
     char *pPrintStr = { 0 };
     uint16_t percent;
 
-    UI_DisplayClear();
+    UI_ClearDisplay();
 
     if (gAircopyState == AIRCOPY_READY) {
         pPrintStr = "AIR COPY(RDY)";
@@ -113,7 +113,7 @@ void UI_DisplayAircopy(void)
         }
     }
 
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }
 
 #endif

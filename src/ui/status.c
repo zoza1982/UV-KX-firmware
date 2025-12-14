@@ -32,6 +32,7 @@
 #include "ui/battery.h"
 #include "ui/helper.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 #include "ui/status.h"
 
 #ifdef ENABLE_FEAT_F4HWN_RX_TX_TIMER

@@ -59,6 +59,7 @@
 #include "dp32g030/gpio.h"
 #include "ui/helper.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 
 
 const uint16_t rega_alarm_tones[5] = {
@@ -96,9 +97,9 @@ void ACTION_RegaTest()
 // Display the REGA message on the screen
 void UI_DisplayREGA()
 {
-    UI_DisplayClear();
+    UI_ClearDisplay();
     UI_DisplayPopup(rega_message);
-    ST7565_BlitFullScreen();
+    UI_UpdateDisplay();
 }
 
 // Transmit a ZVEI tone sequence on the REGA frequency

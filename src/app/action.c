@@ -42,6 +42,7 @@
 #include "settings.h"
 #include "ui/inputbox.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 #ifdef ENABLE_REGA
     #include "app/rega.h"
 #endif

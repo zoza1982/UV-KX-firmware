@@ -38,6 +38,7 @@
 #include "ui/menu.h"
 #include "ui/scanner.h"
 #include "ui/ui.h"
+#include "ui/gui.h"
 #include "misc.h"
 
 GUI_DisplayType_t gScreenToDisplay;

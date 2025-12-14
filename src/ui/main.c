@@ -758,14 +758,16 @@ void UI_DisplayMain(void)
     //if (vfoInfoA->freq_config_RX.Frequency != vfoInfoA->freq_config_TX.Frequency)
     if (vfoInfoA->pRX->Frequency != vfoInfoA->pTX->Frequency)
     {   // show the TX offset symbol
-        int i = vfoInfoA->TX_OFFSET_FREQUENCY_DIRECTION % 3;
-        UI_SetFont(UI_FONT_BN_TN);
-        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 40, 0, 19, false, txVFO1, false, "%s", i == 1 ? "+" : (i == 2 ? "-" : ""));
-    } else if (vfoInfoA->FrequencyReverse)
-    {
-        UI_SetFont(FONT_8B_TR);
-        UI_DrawString(UI_TEXT_ALIGN_LEFT, 40, 0, 19, false, txVFO1, false, "R");
-    }
+        if (vfoInfoA->FrequencyReverse)
+        {
+            UI_SetFont(FONT_8B_TR);
+            UI_DrawString(UI_TEXT_ALIGN_LEFT, 40, 0, 17, true, false, false, "R");
+        } else {
+            int i = vfoInfoA->TX_OFFSET_FREQUENCY_DIRECTION % 3;
+            UI_SetFont(UI_FONT_BN_TN);
+            UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 40, 0, 19, true, false, false, "%s", i == 1 ? "+" : (i == 2 ? "-" : ""));
+        }
+    }    
 
     UI_DrawFrequencyBig(invertFreqVFO1, displayFreqVFO1, 111, 19);
 

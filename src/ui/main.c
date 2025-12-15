@@ -83,6 +83,16 @@ const char *VfoStateStr[] = {
 
 // ***************************************************************************
 
+#if defined ENABLE_AUDIO_BAR || defined ENABLE_RSSI_BAR
+#ifdef ENABLE_FEAT_F4HWN
+static const uint8_t kBarHollowMet[]  = {0b01111111, 0b01000001, 0b01000001, 0b01111111};
+static const uint8_t kBarHollow[]     = {0b00111110, 0b00100010, 0b00100010, 0b00111110};
+static const uint8_t kBarSolid[]      = {0b00111110, 0b00111110, 0b00111110, 0b00111110};
+#else
+static const uint8_t kBarHollow[]     = {0b01111111, 0b01000001, 0b01000001, 0b01111111};
+#endif
+#endif
+
 static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level)
 {
     if(level>6)
@@ -99,67 +109,39 @@ static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level)
 
 static void DrawLevelBar(uint8_t xpos, uint8_t line, uint8_t level, uint8_t bars)
 {
-#ifndef ENABLE_FEAT_F4HWN
-    const char hollowBar[] = {
-        0b01111111,
-        0b01000001,
-        0b01000001,
-        0b01111111
-    };
-#endif
-    
     uint8_t *p_line = gFrameBuffer[line];
     level = MIN(level, bars);
 
     for(uint8_t i = 0; i < level; i++) {
 #ifdef ENABLE_FEAT_F4HWN
+        uint8_t *p_bar = p_line + xpos + i * 5;
         if(gSetting_set_met)
         {
-            const char hollowBar[] = {
-                0b01111111,
-                0b01000001,
-                0b01000001,
-                0b01111111
-            };
-
             if(i < bars - 4) {
-                for(uint8_t j = 0; j < 4; j++)
-                    p_line[xpos + i * 5 + j] = (~(0x7F >> (i + 1))) & 0x7F;
+                const uint8_t barPixel = (~(0x7F >> (i + 1))) & 0x7F;
+                memset(p_bar, barPixel, 4);
             }
             else {
-                memcpy(p_line + (xpos + i * 5), &hollowBar, ARRAY_SIZE(hollowBar));
+                memcpy(p_bar, kBarHollowMet, ARRAY_SIZE(kBarHollowMet));
             }
         }
         else
         {
-            const char hollowBar[] = {
-                0b00111110,
-                0b00100010,
-                0b00100010,
-                0b00111110
-            };
-
-            const char simpleBar[] = {
-                0b00111110,
-                0b00111110,
-                0b00111110,
-                0b00111110
-            };
-
             if(i < bars - 4) {
-                memcpy(p_line + (xpos + i * 5), &simpleBar, ARRAY_SIZE(simpleBar));
+                memcpy(p_bar, kBarSolid, ARRAY_SIZE(kBarSolid));
             }
             else {
-                memcpy(p_line + (xpos + i * 5), &hollowBar, ARRAY_SIZE(hollowBar));
+                memcpy(p_bar, kBarHollow, ARRAY_SIZE(kBarHollow));
             }
         }
 #else
+        uint8_t *p_bar = p_line + xpos + i * 5;
         if(i < bars - 4) {
-            for(uint8_t j = 0; j < 4; j++)
-                p_line[xpos + i * 5 + j] = (~(0x7F >> (i+1))) & 0x7F;
+            const uint8_t barPixel = (~(0x7F >> (i + 1))) & 0x7F;
+            memset(p_bar, barPixel, 4);
         }
         else {
-            memcpy(p_line + (xpos + i * 5), &hollowBar, ARRAY_SIZE(hollowBar));
+            memcpy(p_bar, kBarHollow, ARRAY_SIZE(kBarHollow));
         }
 #endif
     }
@@ -169,7 +151,7 @@ static void DrawLevelBar(uint8_t xpos, uint8_t line, uint8_t level, uint8_t bars
 #ifdef ENABLE_AUDIO_BAR
 
 // Approximation of a logarithmic scale using integer arithmetic
-uint8_t log2_approx(unsigned int value) {
+static inline uint8_t log2_approx(unsigned int value) {
     uint8_t log = 0;
     while (value >>= 1) {
         log++;
@@ -241,47 +223,24 @@ void UI_DisplayAudioBar(void)
 #endif
 
 
-uint8_t convertRSSIToSLevel(int16_t rssi_dBm) {
-    if (rssi_dBm <= -121) {
-        return 0; // S0
+uint8_t convertRSSIToSLevel(int16_t rssi_dBm)
+{
+    static const int16_t sLevelThresholds[] = {
+        -121, -115, -109, -103, -97, -91, -85, -79, -73, -67
+    };
+
+    for (uint8_t level = 0; level < ARRAY_SIZE(sLevelThresholds); level++) {
+        if (rssi_dBm <= sLevelThresholds[level]) {
+            return level;
+        }
     }
-    else if (rssi_dBm <= -115) {
-        return 1; // S1
-    }
-    else if (rssi_dBm <= -109) {
-        return 2; // S2
-    }
-    else if (rssi_dBm <= -103) {
-        return 3; // S3
-    }
-    else if (rssi_dBm <= -97) {
-        return 4; // S4
-    }
-    else if (rssi_dBm <= -91) {
-        return 5; // S5
-    }
-    else if (rssi_dBm <= -85) {
-        return 6; // S6
-    }
-    else if (rssi_dBm <= -79) {
-        return 7; // S7
-    }
-    else if (rssi_dBm <= -73) {
-        return 8; // S8
-    }
-    else if (rssi_dBm <= -67) {
-        return 9; // S9
-    }
-    else {
-        return 10; // Greater than S9
-    }
+
+    return 10;
 }
 
-int16_t convertRSSIToPlusDB(int16_t rssi_dBm) {
-    if (rssi_dBm > -67) {
-        return (rssi_dBm + 67); // Convert to +dB value
-    }
-    return 0; // Return 0 if not greater than S9
+static inline int16_t convertRSSIToPlusDB(int16_t rssi_dBm)
+{
+    return (rssi_dBm > -67) ? (rssi_dBm + 67) : 0;
 }
 
 void DisplayRSSIBar(const bool now)

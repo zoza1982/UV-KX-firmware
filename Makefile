@@ -13,21 +13,14 @@ ENABLE_UART_DEBUG			  	?= 1
 # ---- STOCK QUANSHENG FEATURES ----
 ENABLE_FMRADIO                  ?= 0
 ENABLE_UART                     ?= 1
-ENABLE_AIRCOPY                  ?= 0
-ENABLE_NOAA                     ?= 0
 ENABLE_VOICE                    ?= 0
 ENABLE_VOX                      ?= 0
 ENABLE_ALARM                    ?= 0
 ENABLE_TX1750                   ?= 1
-ENABLE_PWRON_PASSWORD           ?= 0
 ENABLE_DTMF_CALLING             ?= 0
-ENABLE_FLASHLIGHT               ?= 0
 
 # ---- CUSTOM MODS ----
 ENABLE_SPECTRUM                 ?= 0
-ENABLE_BIG_FREQ                 ?= 0
-ENABLE_SMALL_BOLD               ?= 0
-ENABLE_CUSTOM_MENU_LAYOUT       ?= 0
 ENABLE_KEEP_MEM_NAME            ?= 1
 ENABLE_WIDE_RX                  ?= 1
 ENABLE_TX_WHEN_AM               ?= 0
@@ -50,15 +43,12 @@ ENABLE_SCAN_RANGES              ?= 1
 
 # ---- CONTRIB MODS ----
 
-# Thank you @markusb
-ENABLE_REGA                     ?= 0
 # Thank you @reppad
 ENABLE_EXTRA_UART_CMD           ?= 0
 
 # ---- F4HWN MODS ----
 
 ENABLE_FEAT_F4HWN               ?= 1
-ENABLE_FEAT_F4HWN_GAME          ?= 0
 ENABLE_FEAT_F4HWN_SCREENSHOT    ?= 0
 ENABLE_FEAT_F4HWN_SPECTRUM      ?= 1
 ENABLE_FEAT_F4HWN_RX_TX_TIMER   ?= 1
@@ -239,23 +229,11 @@ endif
 ifeq ($(ENABLE_OVERLAY),1)
 	CCFLAGS += -DENABLE_OVERLAY
 endif
-ifeq ($(ENABLE_AIRCOPY),1)
-	CCFLAGS += -DENABLE_AIRCOPY
-endif
 ifeq ($(ENABLE_FMRADIO),1)
 	CCFLAGS += -DENABLE_FMRADIO
 endif
 ifeq ($(ENABLE_UART),1)
 	CCFLAGS += -DENABLE_UART
-endif
-ifeq ($(ENABLE_BIG_FREQ),1)
-	CCFLAGS  += -DENABLE_BIG_FREQ
-endif
-ifeq ($(ENABLE_SMALL_BOLD),1)
-	CCFLAGS  += -DENABLE_SMALL_BOLD
-endif
-ifeq ($(ENABLE_NOAA),1)
-	CCFLAGS  += -DENABLE_NOAA
 endif
 ifeq ($(ENABLE_VOICE),1)
 	CCFLAGS  += -DENABLE_VOICE
@@ -268,9 +246,6 @@ ifeq ($(ENABLE_ALARM),1)
 endif
 ifeq ($(ENABLE_TX1750),1)
 	CCFLAGS  += -DENABLE_TX1750
-endif
-ifeq ($(ENABLE_PWRON_PASSWORD),1)
-	CCFLAGS  += -DENABLE_PWRON_PASSWORD
 endif
 ifeq ($(ENABLE_KEEP_MEM_NAME),1)
 	CCFLAGS  += -DENABLE_KEEP_MEM_NAME
@@ -292,9 +267,6 @@ ifeq ($(ENABLE_BOOT_BEEPS),1)
 endif
 ifeq ($(ENABLE_SHOW_CHARGE_LEVEL),1)
 	CCFLAGS  += -DENABLE_SHOW_CHARGE_LEVEL
-endif
-ifeq ($(ENABLE_REVERSE_BAT_SYMBOL),1)
-	CCFLAGS  += -DENABLE_REVERSE_BAT_SYMBOL
 endif
 ifeq ($(ENABLE_NO_CODE_SCAN_TIMEOUT),1)
 	CCFLAGS  += -DENABLE_NO_CODE_SCAN_TIMEOUT
@@ -344,20 +316,11 @@ endif
 ifeq ($(ENABLE_DTMF_CALLING),1)
 	CCFLAGS  += -DENABLE_DTMF_CALLING
 endif
-ifeq ($(ENABLE_REGA),1)
-	CCFLAGS  += -DENABLE_REGA
-endif
 ifeq ($(ENABLE_AGC_SHOW_DATA),1)
 	CCFLAGS  += -DENABLE_AGC_SHOW_DATA
 endif
-ifeq ($(ENABLE_FLASHLIGHT),1)
-	CCFLAGS  += -DENABLE_FLASHLIGHT
-endif
 ifeq ($(ENABLE_UART_RW_BK_REGS),1)
 	CCFLAGS  += -DENABLE_UART_RW_BK_REGS
-endif
-ifeq ($(ENABLE_CUSTOM_MENU_LAYOUT),1)
-	CCFLAGS  += -DENABLE_CUSTOM_MENU_LAYOUT
 endif
 ifeq ($(ENABLE_FEAT_F4HWN),1)
 	CCFLAGS  += -DENABLE_FEAT_F4HWN

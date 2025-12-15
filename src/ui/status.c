@@ -29,7 +29,7 @@
 #include "helper/battery.h"
 #include "misc.h"
 #include "settings.h"
-#include "ui/battery.h"
+//#include "ui/battery.h"
 #include "ui/helper.h"
 #include "ui/ui.h"
 #include "ui/gui.h"
@@ -57,7 +57,7 @@ static void convertTime(uint8_t *line, uint8_t type)
 
 void UI_DisplayStatus()
 {
-    char str[8] = "";
+    /*char str[8] = "";
 
     gUpdateStatus = false;
     memset(gStatusLine, 0, sizeof(gStatusLine));
@@ -282,5 +282,5 @@ void UI_DisplayStatus()
 
     // **************
 
-    ST7565_BlitStatusLine();
+    ST7565_BlitStatusLine();*/
 }

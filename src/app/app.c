@@ -68,7 +68,7 @@
 #if defined(ENABLE_OVERLAY)
     #include "sram-overlay.h"
 #endif
-#include "ui/battery.h"
+
 #include "ui/inputbox.h"
 #include "ui/main.h"
 #include "ui/menu.h"

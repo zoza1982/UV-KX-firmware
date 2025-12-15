@@ -22,7 +22,6 @@
 #include "functions.h"
 #include "misc.h"
 #include "settings.h"
-#include "ui/battery.h"
 #include "ui/menu.h"
 #include "ui/ui.h"
 #include "ui/gui.h"
@@ -108,6 +107,9 @@ unsigned int BATTERY_VoltsToPercent(const unsigned int voltage_10mV)
 
 void BATTERY_GetReadings(const bool bDisplayBatteryLevel)
 {
+    // unused parameter
+    (void)bDisplayBatteryLevel;
+    
     const uint8_t  PreviousBatteryLevel = gBatteryDisplayLevel;
     const uint16_t Voltage              = (gBatteryVoltages[0] + gBatteryVoltages[1] + gBatteryVoltages[2] + gBatteryVoltages[3]) / 4;
 
@@ -176,8 +178,8 @@ void BATTERY_GetReadings(const bool bDisplayBatteryLevel)
         {
             gLowBattery = false;
 
-            if (bDisplayBatteryLevel)
-                UI_DisplayBattery(gBatteryDisplayLevel, gLowBatteryBlink);
+            //if (bDisplayBatteryLevel)
+            //    UI_DisplayBattery(gBatteryDisplayLevel, gLowBatteryBlink);
         }
 
         if(!gLowBatteryConfirmed)
@@ -195,7 +197,7 @@ void BATTERY_TimeSlice500ms(void)
 
     gLowBatteryBlink = ++lowBatteryCountdown & 1;
 
-    UI_DisplayBattery(0, gLowBatteryBlink);
+    //UI_DisplayBattery(0, gLowBatteryBlink);
 
     if (gCurrentFunction == FUNCTION_TRANSMIT) {
         return;
@@ -239,7 +241,7 @@ void BATTERY_TimeSlice500ms(void)
 
     FUNCTION_Select(FUNCTION_POWER_SAVE);
 
-    ST7565_HardwareReset();
+    //ST7565_HardwareReset();
 
     if (gEeprom.BACKLIGHT_TIME < 61) {
         BACKLIGHT_TurnOff();

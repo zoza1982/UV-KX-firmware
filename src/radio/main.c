@@ -59,7 +59,6 @@
 #include "helper/battery.h"
 #include "helper/boot.h"
 
-#include "ui/lock.h"
 #include "ui/welcome.h"
 #include "ui/menu.h"
 void _putchar(__attribute__((unused)) char c)
@@ -242,25 +241,6 @@ void Main(void)
             }
             RADIO_SetupRegisters(true);
         }
-
-#ifdef ENABLE_PWRON_PASSWORD
-        if (gEeprom.POWER_ON_PASSWORD < 1000000)
-        {
-            bIsInLockScreen = true;
-            UI_DisplayLock();
-            bIsInLockScreen = false;
-
-            // 500ms
-            for (int i = 0; i < 50;)
-            {
-                i = (GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT) && KEYBOARD_Poll() == KEY_INVALID) ? i + 1 : 0;
-                SYSTEM_DelayMs(10);
-            }
-            gKeyReading0 = KEY_INVALID;
-            gKeyReading1 = KEY_INVALID;
-            gDebounceCounter = 0;
-        }
-#endif
 
         BOOT_ProcessMode(BootMode);
 

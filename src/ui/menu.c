@@ -40,6 +40,29 @@
 #include "ui.h"
 #include "ui/gui.h"
 
+// Helper bridge to the new GUI drawing primitives (ui/gui.h) so we avoid legacy
+// framebuffer helpers from ui/helper.h in this module.
+static inline u8g2_uint_t MENU_LineToY(uint8_t line)
+{
+    // Align text baselines roughly to the old line-based layout (8px spacing).
+    return 6 + (line * 8);
+}
+
+static void MENU_DrawString(const char *text, uint8_t start, uint8_t end, uint8_t line, bool bold)
+{
+    UI_SetFont(bold ? FONT_8B_TR : FONT_8_TR);
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, start, end, MENU_LineToY(line), true, false, false, text);
+}
+
+static void MENU_DrawStringSmall(const char *text, uint8_t start, uint8_t end, uint8_t line)
+{
+    UI_SetFont(FONT_8_TR);
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, start, end, MENU_LineToY(line), true, false, false, text);
+}
+
+// Redirect legacy helpers to GUI-backed implementations locally in this file.
+#define UI_PrintString(str, start, end, line, width) MENU_DrawString(str, start, end, line, false)
+#define UI_PrintStringSmallNormal(str, start, end, line) MENU_DrawStringSmall(str, start, end, line)
 const t_menu_item MenuList[] =
 {
 //   text,          menu ID

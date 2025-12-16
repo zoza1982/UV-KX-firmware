@@ -803,6 +803,11 @@ void UI_DisplayMain(void)
     }
 
     UI_SetFont(FONT_5_TR);
+    if (gWasFKeyPressed) {
+        UI_DrawString(UI_TEXT_ALIGN_RIGHT, 0, 97, 56, true, true, false, "F");
+    }
+
+    //UI_SetFont(FONT_5_TR);
     UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 128, 64, true, false, false, "%i%%", BATTERY_VoltsToPercent(gBatteryVoltageAverage));
 
     DisplayRSSIBar(false);

@@ -30,10 +30,21 @@
 #include "misc.h"
 #include "settings.h"
 //#include "ui/battery.h"
-#include "ui/helper.h"
 #include "ui/ui.h"
 #include "ui/gui.h"
 #include "ui/status.h"
+
+#define STATUS_LINE_Y 6
+
+#ifndef ENABLE_FEAT_F4HWN_DEBUG
+// Minimal replacement for deprecated UI_PrintStringSmallBufferNormal.
+static void Status_PrintStringSmall(const char *text, uint8_t *line)
+{
+    (void)line;  // legacy buffer no longer used; draw directly via GUI backend
+    UI_SetFont(FONT_5_TR);
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, UI_W - 1, STATUS_LINE_Y, true, false, false, text);
+}
+#endif
 
 #ifdef ENABLE_FEAT_F4HWN_RX_TX_TIMER
 #ifndef ENABLE_FEAT_F4HWN_DEBUG
@@ -48,7 +59,7 @@ static void convertTime(uint8_t *line, uint8_t type)
 
     char str[6];
     sprintf(str, "%02u:%02u", m, s);
-    UI_PrintStringSmallBufferNormal(str, line);
+    Status_PrintStringSmall(str, line);
 
     gUpdateStatus = true;
 }

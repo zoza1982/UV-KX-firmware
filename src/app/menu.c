@@ -989,7 +989,7 @@ static void MENU_ClampSelection(int8_t Direction)
         if (Selection < Min) Selection = Min;
         else
         if (Selection > Max) Selection = Max;
-        gSubMenuSelection = NUMBER_AddWithWraparound(Selection, Direction, Min, Max);
+        gSubMenuSelection = NUMBER_AddWithWraparound(Selection, -Direction, Min, Max);
     }
 }
 

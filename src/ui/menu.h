@@ -24,7 +24,7 @@
 #include "settings.h"
 
 typedef struct {
-    const char  name[7];    // menu display area only has room for 6 characters
+    const char  name[11];    // up to 10 characters (padded) for clearer labels
     uint8_t     menu_id;
 } t_menu_item;
 
@@ -228,6 +228,7 @@ extern char              edit_original[17];
 extern char              edit[17];
 extern int               edit_index;
 
+void UI_MenuInit(void);
 void UI_DisplayMenu(void);
 int UI_MENU_GetCurrentMenuId();
 uint8_t UI_MENU_GetMenuIdx(uint8_t id);

@@ -98,8 +98,14 @@ void GUI_SelectNextDisplay(GUI_DisplayType_t Display)
         gWasFKeyPressed      = false;
 
         gUpdateStatus        = true;
+
     }
 
     gScreenToDisplay = Display;
     gUpdateDisplay   = true;
+
+    if ( gScreenToDisplay == DISPLAY_MENU )
+    {
+        UI_MenuInit();
+    }
 }

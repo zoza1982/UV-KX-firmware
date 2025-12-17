@@ -46,6 +46,10 @@
 
 center_line_t center_line = CENTER_LINE_NONE;
 
+static uint8_t  gLastRxVfo = 0;
+static bool     gLastRxVfoValid = false;
+static uint16_t gLastRxBlinkCountdown = 0; // 500ms units, counts down after last RX
+
 #ifdef ENABLE_FEAT_F4HWN
     static int8_t RxBlink;
     static int8_t RxBlinkLed = 0;
@@ -506,6 +510,22 @@ void UI_MAIN_PrintAGC(bool now)
 void UI_MAIN_TimeSlice500ms(void)
 {
     if(gScreenToDisplay==DISPLAY_MAIN) {
+        static bool sLastBlinkPhase = false;
+        static bool sLastBlinkActive = false;
+
+        if (gLastRxBlinkCountdown > 0) {
+            gLastRxBlinkCountdown--;
+        }
+
+        const bool blinkActive = gLastRxVfoValid && (gLastRxBlinkCountdown > 0);
+        const bool blinkPhase = blinkActive && (((gFlashLightBlinkCounter / 50u) & 1u) == 0u); // ~500ms toggle (10ms units)
+
+        if ((blinkActive != sLastBlinkActive) || (blinkActive && blinkPhase != sLastBlinkPhase)) {
+            gUpdateDisplay = true;
+        }
+        sLastBlinkPhase = blinkPhase;
+        sLastBlinkActive = blinkActive;
+
 #ifdef ENABLE_AGC_SHOW_DATA
         UI_MAIN_PrintAGC(true);
         return;
@@ -576,23 +596,7 @@ void UI_DisplayMain(void)
     center_line = CENTER_LINE_NONE;
 
     // clear the screen
-    UI_ClearDisplay();
-
-    if(gLowBattery && !gLowBatteryConfirmed) {
-        UI_SetInfoMessage(UI_INFO_LOW_BATTERY);
-        UI_UpdateDisplay();
-        return;
-    }
-
-    if (gEeprom.KEY_LOCK && gKeypadLocked > 0)
-    {   // tell user how to unlock the keyboard
-        UI_DrawPopupWindow(20, 20, 88, 28, "Info");
-        UI_SetFont(FONT_8B_TR);
-        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 36, true, false, false, "Long press #");
-        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 44, true, false, false, "to unlock");
-        UI_UpdateDisplay();
-        return;
-    }
+    UI_ClearDisplay();    
 
     unsigned int activeTxVFO = gRxVfoIsActive ? gEeprom.RX_VFO : gEeprom.TX_VFO;
     unsigned int vfoA = gEeprom.TX_VFO == 0 ? 0 : 1;
@@ -620,8 +624,17 @@ void UI_DisplayMain(void)
         {
             rxVFO1 = (gEeprom.RX_VFO == vfoA && VfoState[vfoA] == VFO_STATE_NORMAL);
             rxVFO2 = (gEeprom.RX_VFO == vfoB && VfoState[vfoB] == VFO_STATE_NORMAL);
+
+            if ((rxVFO1 || rxVFO2) && gEeprom.RX_VFO < 2) {
+                gLastRxVfo = gEeprom.RX_VFO;
+                gLastRxVfoValid = true;
+                gLastRxBlinkCountdown = 240; // 120s (500ms steps)
+            }
         }
     }
+
+    const bool blinkActive = gLastRxVfoValid && (gLastRxBlinkCountdown > 0);
+    const bool lastRxBlinkPhase = blinkActive && (((gFlashLightBlinkCounter / 50u) & 1u) == 0u); // ~500ms toggle (10ms units)
 
     // draw VFO1 area
 
@@ -641,7 +654,11 @@ void UI_DisplayMain(void)
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, 6, false, false, false, String);
     }
 
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 2, 0, 14, true, true, false, vfoA == 0 ? "A" : "B");
+    const bool lastRxIsVfoA = (gLastRxVfoValid && gLastRxVfo == vfoA);
+    const bool vfoALabelFill = (!blinkActive || !lastRxIsVfoA) ? true : lastRxBlinkPhase;
+    if (vfoALabelFill) {
+        UI_DrawString(UI_TEXT_ALIGN_LEFT, 2, 0, 14, true, true, false, vfoA == 0 ? "A" : "B");
+    }
     if (rxVFO1) {
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 12, 0, 14, true, true, false, UI_RX_STR);
     } else if (txVFO1) {
@@ -766,7 +783,11 @@ void UI_DisplayMain(void)
     UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, vfoBY + 6, false, false, false, "%.*s %.*s %.*s", UI_StringLengthNL(gModulationStr[modB]), gModulationStr[modB], UI_StringLengthNL(bandwidthB), bandwidthB, UI_StringLengthNL(powerB), powerB);
 
     UI_SetFont(FONT_8B_TR);
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 2, 0, vfoBY + 15, true, false, true, vfoB == 0 ? "A" : "B");
+    const bool lastRxIsVfoB = (gLastRxVfoValid && gLastRxVfo == vfoB);
+    const bool vfoBLabelFill = (blinkActive && lastRxIsVfoB) ? !lastRxBlinkPhase : true;
+    if (vfoBLabelFill) {
+        UI_DrawString(UI_TEXT_ALIGN_LEFT, 2, 0, vfoBY + 15, true, false, true, vfoB == 0 ? "A" : "B");
+    }
     if (rxVFO2)
     {
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 12, 0, vfoBY + 15, true, true, false, UI_RX_STR);
@@ -789,7 +810,7 @@ void UI_DisplayMain(void)
     // Status info
     if (gChargingWithTypeC) 
     {
-        UI_DrawIc8Charging(118, 52, true);
+        UI_DrawIc8Charging(114, 52, true);
     }
     else 
     {
@@ -825,7 +846,7 @@ void UI_DisplayMain(void)
     
     // TODO : create icons for the following statuses
     if (gEeprom.KEY_LOCK) {
-        UI_DrawString(UI_TEXT_ALIGN_RIGHT, 0, 97, 56, true, true, false, "L");        
+        UI_DrawLock(88, 50, false);
     }
     else if (gWasFKeyPressed) {
         UI_DrawString(UI_TEXT_ALIGN_RIGHT, 0, 97, 56, true, true, false, "F");        
@@ -835,6 +856,18 @@ void UI_DisplayMain(void)
     }
 
     DisplayRSSIBar(false);
+
+    if(gLowBattery && !gLowBatteryConfirmed) {
+        UI_SetInfoMessage(UI_INFO_LOW_BATTERY);        
+    }
+
+    if (gEeprom.KEY_LOCK && gKeypadLocked > 0)
+    {   // tell user how to unlock the keyboard
+        UI_DrawPopupWindow(20, 20, 88, 28, "Info");
+        UI_SetFont(FONT_8B_TR);
+        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 36, true, false, false, "Long press #");
+        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 44, true, false, false, "to unlock");        
+    }
 
     UI_UpdateDisplay();
 }

@@ -369,6 +369,23 @@ void UI_DrawSave(u8g2_uint_t x, u8g2_uint_t y, bool color)
     u8g2_DrawXBM(gUiCtx.lcd, x, y, memory_width, memory_height, memory_bits);
 }
 
+void UI_DrawLock(u8g2_uint_t x, u8g2_uint_t y, bool inverse)
+{
+    if (gUiCtx.lcd == NULL) {
+        return;
+    }
+
+    if (inverse) {
+        u8g2_SetDrawColor(gUiCtx.lcd, UI_BLACK);
+        u8g2_DrawBox(gUiCtx.lcd, x, y, lock_width + 2U, lock_height + 2U);
+        u8g2_SetDrawColor(gUiCtx.lcd, UI_WHITE);
+        u8g2_DrawXBM(gUiCtx.lcd, x + 1U, y + 1U, lock_width, lock_height, lock_bits);
+    } else {
+        u8g2_SetDrawColor(gUiCtx.lcd, UI_BLACK);
+        u8g2_DrawXBM(gUiCtx.lcd, x, y, lock_width, lock_height, lock_bits);
+    }
+}
+
 void UI_DrawBox(u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h)
 {
     if (gUiCtx.lcd == NULL) {

@@ -22,5 +22,7 @@
 bool UART_IsCommandAvailable(void);
 void UART_HandleCommand(void);
 
+void sendScreenBuffer(const void* buffer, uint32_t size);
+
 #endif
 

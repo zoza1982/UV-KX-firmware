@@ -53,10 +53,10 @@ const t_menu_item MenuList[] =
         {"TX DCS",  MENU_T_DCS         }, // was "T_DCS"
         {"TX CTCS", MENU_T_CTCS        }, // was "T_CTCS"
         {"TX ODIR", MENU_SFT_D         }, // was "SFT_D"
-        {"TX OFFS", MENU_OFFSET        }, // was "OFFSET"
+        {"TX OFFSET", MENU_OFFSET        }, // was "OFFSET"
         {"W/N",     MENU_W_N           },
-        {"BUSYCL",  MENU_BCL           }, // was "BCL"
-        {"COMPND",  MENU_COMPAND       },
+        {"BUSY LOCK",  MENU_BCL           }, // was "BCL"
+        {"COMPANDER",  MENU_COMPAND       }, //compander
         {"MODE",    MENU_AM            }, // was "AM"
     #ifdef ENABLE_FEAT_F4HWN
         {"TX LOCK", MENU_TX_LOCK       },
@@ -65,7 +65,7 @@ const t_menu_item MenuList[] =
         {"SC ADD2", MENU_S_ADD2        },
         {"SC ADD3", MENU_S_ADD3        },
         {"CH SAVE", MENU_MEM_CH        }, // was "MEM-CH"
-        {"CH DELE", MENU_DEL_CH        }, // was "DEL-CH"
+        {"CH DELETE", MENU_DEL_CH        }, // was "DEL-CH"
         {"CH NAME", MENU_MEM_NAME      },
 
         {"S LIST",  MENU_S_LIST        },
@@ -366,11 +366,6 @@ const char gSubMenu_SET_LCK[][9] =
  "KEYS+PTT"
 };
 
-const char gSubMenu_SET_MET[][8] =
-{
- "TINY",
- "CLASSIC"
-};
 
 #ifdef ENABLE_FEAT_F4HWN_NARROWER
 const char gSubMenu_SET_NFM[][9] =
@@ -391,6 +386,17 @@ const char gSubMenu_SET_KEY[][9] =
 };
 #endif
 #endif
+
+const char gSubMenu_SLIST[][9] =
+{
+    "NO LIST",
+    "LIST 1",
+    "LIST 2",
+    "LIST 3",
+    "LISTS 1-3",
+    "ALL"
+};
+
 
 const t_sidefunction gSubMenu_SIDEFUNCTIONS[] =
 {
@@ -693,6 +699,8 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
         return UI_MENU_JoinFixedList((const char*)gSubMenu_SET_KEY, sizeof(gSubMenu_SET_KEY[0]), ARRAY_SIZE(gSubMenu_SET_KEY));
 #endif
 #endif
+    case MENU_S_LIST:
+        return UI_MENU_JoinFixedList((const char*)gSubMenu_SLIST, sizeof(gSubMenu_SLIST[0]), ARRAY_SIZE(gSubMenu_SLIST));
     case MENU_F1SHRT:
     case MENU_F1LONG:
     case MENU_F2SHRT:
@@ -736,7 +744,7 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
         break;
     }
 
-    static char numeric[15];
+    static char numeric[30];
     switch (menuId)
     {
     case MENU_AUTOLK:
@@ -790,9 +798,12 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
 #endif
         break;
     case MENU_VOL:
-        snprintf(numeric, sizeof(numeric), "%s\n%s",
+        snprintf(numeric, sizeof(numeric), "%s\n%s\n%s\n%u.%02uV %u%%",
             AUTHOR_STRING_2,
-            VERSION_STRING_2
+            VERSION_STRING_2,
+            EDITION_STRING,
+            gBatteryVoltageAverage / 100, gBatteryVoltageAverage % 100,
+            BATTERY_VoltsToPercent(gBatteryVoltageAverage)
         );
         break;
 #ifdef ENABLE_FEAT_F4HWN_SLEEP
@@ -806,7 +817,45 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
             snprintf(numeric, sizeof(numeric), "%dh:%02dm", (gSubMenuSelection / 60), (gSubMenuSelection % 60));
         }
         break;
-#endif            
+#endif
+    case MENU_MEM_CH:
+    case MENU_1_CALL:
+    case MENU_DEL_CH:
+    {
+        const bool valid = RADIO_CheckValidChannel(gSubMenuSelection, false, 0);
+        UI_GenerateChannelStringEx(numeric, valid, gSubMenuSelection);
+        size_t len = strnlen(numeric, sizeof(numeric));
+        if (valid && !gAskForConfirmation) {
+            const uint32_t frequency = SETTINGS_FetchChannelFrequency(gSubMenuSelection);
+            len += snprintf(&numeric[len], sizeof(numeric) - len, "\n%u.%05u", frequency / 100000, frequency % 100000);
+        }
+        char* name = NULL;
+        SETTINGS_FetchChannelName(name, gSubMenuSelection);
+        if (name != NULL) {
+            len += snprintf(&numeric[len], sizeof(numeric) - len, "\n%.8s", name);
+        }
+    }
+    break;
+
+    case MENU_MEM_NAME:
+    {
+        const bool valid = RADIO_CheckValidChannel(gSubMenuSelection, false, 0);
+        UI_GenerateChannelStringEx(numeric, valid, gSubMenuSelection);
+
+    }
+    break;
+
+    case MENU_UPCODE:
+        snprintf(numeric, sizeof(numeric), "%.8s\n%.8s", gEeprom.DTMF_UP_CODE, gEeprom.DTMF_UP_CODE + 8);
+        break;
+
+    case MENU_DWCODE:
+        snprintf(numeric, sizeof(numeric), "%.8s\n%.8s", gEeprom.DTMF_DOWN_CODE, gEeprom.DTMF_DOWN_CODE + 8);
+        break;
+
+    case MENU_D_PRE:
+        snprintf(numeric, sizeof(numeric), "%d*10ms", gSubMenuSelection);
+        break;
     default:
         snprintf(numeric, sizeof(numeric), "%ld", (long)gSubMenuSelection);
         break;
@@ -847,12 +896,21 @@ void UI_DisplayMenu(void)
 
     UI_SelectionList_Draw(&menuList, 15, getCurrentOption());
 
-    if (gIsInSubMenu) {
+    if ((UI_MENU_GetCurrentMenuId() == MENU_RESET ||
+        UI_MENU_GetCurrentMenuId() == MENU_MEM_CH ||
+        UI_MENU_GetCurrentMenuId() == MENU_MEM_NAME ||
+        UI_MENU_GetCurrentMenuId() == MENU_DEL_CH) && gAskForConfirmation)
+    {   // display confirmation
+
+        UI_DrawPopupWindow(20, 20, 88, 24, "Info");
+        UI_SetFont(FONT_8B_TR);
+        UI_DrawString(UI_TEXT_ALIGN_CENTER, 22, 106, 36, true, false, false, (gAskForConfirmation == 1) ? "SURE?" : "WAIT!");
+
+    }
+    else if (gIsInSubMenu) {
         // gSubMenuSelection
         UI_DrawPopupWindow(36, 6, 90, 52, UI_SelectionList_GetStringLine(&menuList));
-
         setSubMenu();
-
         UI_SelectionList_Draw(&subMenuList, 20, NULL);
     }
 

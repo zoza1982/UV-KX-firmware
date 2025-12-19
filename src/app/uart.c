@@ -165,6 +165,8 @@ static uint32_t Timestamp;
 static uint16_t gUART_WriteIndex;
 static bool     bIsEncrypted = true;
 
+static bool sendScreenData = false;
+
 static void SendReply(void *pReply, uint16_t Size)
 {
     Header_t Header;
@@ -577,6 +579,14 @@ bool UART_IsCommandAvailable(void)
     return (CRC_Calculate(UART_Command.Buffer, Size) != CRC) ? false : true;
 }
 
+void sendScreenBuffer(const void* buffer, uint32_t size) {
+    const uint16_t screenDumpIdByte = 0xEDAB;
+    if (sendScreenData) {
+        UART_Send(&screenDumpIdByte, 2);
+        UART_Send(buffer, size);
+    }
+}
+
 void UART_HandleCommand(void)
 {
     switch (UART_Command.Header.ID)
@@ -636,6 +646,13 @@ void UART_HandleCommand(void)
             CMD_0602_WriteBK4819Reg(UART_Command.Buffer);
             break;
 #endif
+        case 0x0A03:
+            sendScreenData = true;
+            break;
+        case 0x0A04:
+            sendScreenData = false;
+            break;            
+        
     }
     #ifdef ENABLE_FEAT_F4HWN_SCREENSHOT
         gUART_LockScreenshot = 20; // lock screenshot

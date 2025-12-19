@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "app/uart.h"
 #include "font/font_10_tr.h"
 #include "font/font_5_tr.h"
 #include "font/font_8_tr.h"
@@ -49,6 +50,8 @@ void UI_UpdateDisplay(void)
     }
 
     u8g2_SendBuffer(gUiCtx.lcd);
+
+    sendScreenBuffer(u8g2_GetBufferPtr(gUiCtx.lcd), 1024);
 }
 
 void UI_TimeOut(void)

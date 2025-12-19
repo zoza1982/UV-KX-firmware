@@ -649,6 +649,7 @@ void UI_DisplayMain(void)
         // UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 6, false, false, false, "CH-%03u", gEeprom.ScreenChannel[vfoA] + 1);
         // TODO
         // Show Band name
+        UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, 6, false, false, false, "VFO");
     } else {
         // show the channel name
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, 6, false, false, false, String);
@@ -760,6 +761,7 @@ void UI_DisplayMain(void)
         //UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, vfoBY + 6, false, false, false, "CH-%03u", gEeprom.ScreenChannel[vfoB] + 1);
         // TODO
         // Show Band name
+        UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, vfoBY + 6, false, false, false, "VFO");
     } else {
         // show the channel name
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 1, 0, vfoBY + 6, false, false, false, String);

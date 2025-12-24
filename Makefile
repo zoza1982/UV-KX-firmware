@@ -20,7 +20,7 @@ ENABLE_TX1750                   ?= 1
 ENABLE_DTMF_CALLING             ?= 0
 
 # ---- CUSTOM MODS ----
-ENABLE_SPECTRUM                 ?= 1
+ENABLE_SPECTRUM                 ?= 0
 ENABLE_KEEP_MEM_NAME            ?= 1
 ENABLE_WIDE_RX                  ?= 1
 ENABLE_TX_WHEN_AM               ?= 0
@@ -48,7 +48,7 @@ ENABLE_EXTRA_UART_CMD           ?= 0
 # ---- F4HWN MODS ----
 
 ENABLE_FEAT_F4HWN               ?= 1
-ENABLE_FEAT_F4HWN_SPECTRUM      ?= 1
+ENABLE_FEAT_F4HWN_SPECTRUM      ?= 0
 ENABLE_FEAT_F4HWN_RX_TX_TIMER   ?= 1
 ENABLE_FEAT_F4HWN_SLEEP         ?= 1
 ENABLE_FEAT_F4HWN_RESUME_STATE  ?= 0

@@ -105,7 +105,7 @@
   macro can be commented to reduce code size.
 */
 #ifndef U8G2_WITHOUT_INTERSECTION
-#define U8G2_WITH_INTERSECTION
+//#define U8G2_WITH_INTERSECTION
 #endif
 
 
@@ -117,7 +117,7 @@
   Clip window support requires about 200 bytes flash memory on AVR systems
 */
 #ifndef U8G2_WITHOUT_CLIP_WINDOW_SUPPORT
-#define U8G2_WITH_CLIP_WINDOW_SUPPORT
+//#define U8G2_WITH_CLIP_WINDOW_SUPPORT
 #endif
 
 /*
@@ -127,7 +127,7 @@
   Jan 2020: Disabling this macro will save up to 600 bytes on AVR 
 */
 #ifndef U8G2_WITHOUT_FONT_ROTATION
-#define U8G2_WITH_FONT_ROTATION
+//#define U8G2_WITH_FONT_ROTATION
 #endif
 
 /*
@@ -155,7 +155,7 @@
       - Only character values 0 to 255 are supported in the font file.
 */
 #ifndef U8G2_WITHOUT_UNICODE
-#define U8G2_WITH_UNICODE
+//#define U8G2_WITH_UNICODE
 #endif
 
 
@@ -192,7 +192,7 @@
 /* it can be enabled for those uC supporting larger arrays */
 #if defined(unix) || defined(__unix__) || defined(__arm__) || defined(__arc__) || defined(ESP8266) || defined(ESP_PLATFORM) || defined(__LUATOS__)
 #ifndef U8G2_USE_LARGE_FONTS
-#define U8G2_USE_LARGE_FONTS
+//#define U8G2_USE_LARGE_FONTS
 #endif 
 #endif
 

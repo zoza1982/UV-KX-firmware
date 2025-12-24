@@ -1555,6 +1555,8 @@ u8g2_uint_t u8g2_GetUTF8Width(u8g2_t *u8g2, const char *str)
 
 void u8g2_SetFontDirection(u8g2_t *u8g2, uint8_t dir)
 {
+  (void)u8g2;
+  (void)dir;
 #ifdef U8G2_WITH_FONT_ROTATION  
   u8g2->font_decode.dir = dir;
 #endif

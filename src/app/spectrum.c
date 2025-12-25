@@ -1035,8 +1035,7 @@ static void ShowChannelName(uint32_t f)
         }
         if (channelName[0] != 0 && Spectrum_IsDisplayReady()) {
             UI_SetFont(UI_FONT_5_TR);
-            UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 22, true, false, false,
-                          channelName);
+            UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 16, true, false, false, channelName);
         }
     }
 }
@@ -1047,21 +1046,21 @@ static void DrawF(uint32_t f)
     if (!Spectrum_IsDisplayReady())
         return;
 
-    UI_SetFont(UI_FONT_8_TR);
+    /*UI_SetFont(UI_FONT_8_TR);
     {
         UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 0, 0, 10, true, false, false,
                        "%u.%05u", f / 100000, f % 100000);
-    }
+    }*/
+
+    UI_DrawFrequencySmall(false, f, 65, 8);
 
     UI_SetFont(UI_FONT_5_TR);
-    UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 10, true, false, false,
-                   "%s", gModulationStr[settings.modulationType]);
-    UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 16, true, false, false,
-                   "%sk", bwOptions[settings.listenBw]);
+    UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 5, true, false, false,
+                   "%s %sK", gModulationStr[settings.modulationType], bwOptions[settings.listenBw]);
 
-#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
-    ShowChannelName(f);
-#endif
+//#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
+//    ShowChannelName(f);
+//#endif
 }
 
 static void DrawNums()
@@ -1069,40 +1068,40 @@ static void DrawNums()
     if (!Spectrum_IsDisplayReady())
         return;
 
+    UI_SetFont(UI_FONT_5_TR);
     if (currentState == SPECTRUM)
     {
 #ifdef ENABLE_SCAN_RANGES
         if (gScanRangeStart)
         {
-            sprintf(String, "%ux", GetStepsCountDisplay());
+            sprintf(String, "%uX", GetStepsCountDisplay());
         }
         else
 #endif
         {
-            sprintf(String, "%ux", GetStepsCount());
+            sprintf(String, "%uX", GetStepsCount());
         }
-        UI_SetFont(UI_FONT_5_TR);
-        UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 48, true, false, false, String);
-        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 0, 0, 56, true, false, false,
-                       "%u.%02uk", GetScanStep() / 100, GetScanStep() % 100);
+        
+       //UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 48, true, false, false, String);
+        UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 12, true, false, false,
+                       "%s %u.%02uK", String, GetScanStep() / 100, GetScanStep() % 100);
     }
 
     if (IsCenterMode())
-    {
-        UI_SetFont(UI_FONT_5_TR);
+    {        
         UI_DrawStringf(UI_TEXT_ALIGN_CENTER, 0, 127, 63, true, false, false,
-                       "%u.%05u %u.%02uk", currentFreq / 100000,
+                       "%u.%05u %u.%02uK", currentFreq / 100000,
                        currentFreq % 100000,
                        settings.frequencyChangeStep / 100,
                        settings.frequencyChangeStep % 100);
     }
     else
     {
-        UI_SetFont(UI_FONT_5_TR);
+        
         UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 0, 0, 63, true, false, false,
                        "%u.%05u", GetFStart() / 100000, GetFStart() % 100000);
         UI_DrawStringf(UI_TEXT_ALIGN_CENTER, 0, 127, 63, true, false, false,
-                       "%u.%02uk", settings.frequencyChangeStep / 100,
+                       "%u.%02uK", settings.frequencyChangeStep / 100,
                        settings.frequencyChangeStep % 100);
         UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 63, true, false, false,
                        "%u.%05u", GetFEnd() / 100000, GetFEnd() % 100000);
@@ -1163,7 +1162,7 @@ static void DrawArrow(uint8_t x)
         if (!(v & 128))
         {
             uint8_t h = (uint8_t)(3 - my_abs(i));
-            DrawVLine(DrawingEndY + 6, (uint8_t)(DrawingEndY + 6 + h), v);
+            DrawVLine(DrawingEndY + 6 - h, (uint8_t)(DrawingEndY + 6), v);
         }
     }
 }
@@ -1389,14 +1388,14 @@ static void RenderFreqInput()
     if (!Spectrum_IsDisplayReady())
         return;
 
-    UI_SetFont(UI_FONT_8_TR);
+    UI_SetFont(UI_FONT_10_TR);
     UI_DrawString(UI_TEXT_ALIGN_CENTER, 0, 127, 32, true, false, false,
                   freqInputString);
 }
 
 static void RenderStatus()
 {
-    DrawStatus();
+    //DrawStatus();
 }
 
 static void RenderSpectrum()
@@ -1433,9 +1432,9 @@ static void RenderStill()
     int dbm = Rssi2DBm(scanInfo.rssi);
     uint8_t s = DBm2S(dbm);
     sprintf(String, "S: %u", s);
-    UI_SetFont(UI_FONT_5_TR);
+    UI_SetFont(UI_FONT_8_TR);
     UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 20, true, false, false, String);
-    UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 0, 0, 28, true, false, false,
+    UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 40, 0, 20, true, false, false,
                    "%d dBm", dbm);
 
     if (!monitorMode)
@@ -1479,7 +1478,7 @@ static void RenderStill()
                  GetRegMenuValue(idx));
 #endif
 
-        UI_SetFont(UI_FONT_5_TR);
+        UI_SetFont(UI_FONT_8_TR);
         UI_DrawString(UI_TEXT_ALIGN_LEFT, x0 + 1, x0 + cell_w - 1, y0,
                       !selected, false, false, String);
     }

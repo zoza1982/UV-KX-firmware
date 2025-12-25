@@ -231,7 +231,7 @@ static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
 
         case KEY_5:
             if(beep) {
-#ifdef ENABLE_NOAA
+/*#ifdef ENABLE_NOAA
                 if (!IS_NOAA_CHANNEL(gTxVfo->CHANNEL_SAVE)) {
                     gEeprom.ScreenChannel[Vfo] = gEeprom.NoaaChannel[gEeprom.TX_VFO];
                 }
@@ -242,8 +242,8 @@ static void processFKeyFunction(const KEY_Code_t Key, const bool beep)
 #endif
                 }
                 gRequestSaveVFO   = true;
-                gVfoConfigureMode = VFO_CONFIGURE_RELOAD;
-#elif defined(ENABLE_SPECTRUM)
+                gVfoConfigureMode = VFO_CONFIGURE_RELOAD;*/
+#ifdef ENABLE_SPECTRUM
                 APP_RunSpectrum();
                 gRequestDisplayScreen = DISPLAY_MAIN;
 #endif

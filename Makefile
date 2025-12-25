@@ -4,7 +4,7 @@
 
 ENABLE_REMOTE_CONTROL			?= 0
 ENABLE_UART_DEBUG			  	?= 0
-ENABLE_TXRX_MSG                 ?= 0 ## todo
+ENABLE_TXRX_MSG                 ?= 0
 
 # compile options (see README.md for descriptions)
 # 0 = disable
@@ -20,7 +20,7 @@ ENABLE_TX1750                   ?= 1
 ENABLE_DTMF_CALLING             ?= 0
 
 # ---- CUSTOM MODS ----
-ENABLE_SPECTRUM                 ?= 1 ## uncompleted
+ENABLE_SPECTRUM                 ?= 1
 ENABLE_KEEP_MEM_NAME            ?= 1
 ENABLE_WIDE_RX                  ?= 1
 ENABLE_TX_WHEN_AM               ?= 0
@@ -33,13 +33,13 @@ ENABLE_AM_FIX                   ?= 1
 ENABLE_SQUELCH_MORE_SENSITIVE   ?= 1
 ENABLE_FASTER_CHANNEL_SCAN      ?= 1
 ENABLE_RSSI_BAR                 ?= 1
-ENABLE_AUDIO_BAR                ?= 0 ## uncompleted
+ENABLE_AUDIO_BAR                ?= 0
 ENABLE_COPY_CHAN_TO_VFO         ?= 0
 ENABLE_REDUCE_LOW_MID_TX_POWER  ?= 0
 ENABLE_BYP_RAW_DEMODULATORS     ?= 0
 ENABLE_BLMIN_TMP_OFF            ?= 0
 ENABLE_SCAN_RANGES              ?= 1
-ENABLE_SCANLIST                 ?= 0 ## uncompleted
+ENABLE_SCANLIST                 ?= 0
 
 # ---- CONTRIB MODS ----
 
@@ -49,13 +49,13 @@ ENABLE_EXTRA_UART_CMD           ?= 0
 # ---- F4HWN MODS ----
 
 ENABLE_FEAT_F4HWN               ?= 1
-ENABLE_FEAT_F4HWN_SPECTRUM      ?= 1 ## uncompleted
-ENABLE_FEAT_F4HWN_RX_TX_TIMER   ?= 1 ## uncompleted
+ENABLE_FEAT_F4HWN_SPECTRUM      ?= 1
+ENABLE_FEAT_F4HWN_RX_TX_TIMER   ?= 1
 ENABLE_FEAT_F4HWN_SLEEP         ?= 1
 ENABLE_FEAT_F4HWN_RESUME_STATE  ?= 0
 ENABLE_FEAT_F4HWN_NARROWER      ?= 1
 ENABLE_FEAT_F4HWN_CTR           ?= 1
-ENABLE_FEAT_F4HWN_RESCUE_OPS    ?= 0 ## not implemented
+ENABLE_FEAT_F4HWN_RESCUE_OPS    ?= 0
 ENABLE_FEAT_F4HWN_VOL           ?= 0
 ENABLE_FEAT_F4HWN_RESET_CHANNEL ?= 0
 ENABLE_FEAT_F4HWN_PMR           ?= 0
@@ -132,7 +132,7 @@ else
 	FixPath = $1
     WHERE = which
     DEL = del
-    K5PROG = utils/k5prog/k5prog -D -F -YYYYY -p /dev/$(COMPORT) -b	
+    K5PROG = utils/k5prog/k5prog -D -F -YYYYY -p /dev/$(COMPORT) -b
 	DEV_NULL = /dev/null
 	MKDIR_IF_NOT_EXIST = [ -d "$(1)" ] || $(MKDIR) "$(1)"
 endif
@@ -169,11 +169,11 @@ ASMFLAGS =
 ASMFLAGS += -mcpu=cortex-m0
 
 # C flags
-CCFLAGS = 
+CCFLAGS =
 CCFLAGS += -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -MMD -g
-#CCFLAGS += -flto=1
+CCFLAGS += -flto=1
 CCFLAGS += -ftree-vectorize -funroll-loops
-CCFLAGS += -Wextra -Wno-unused-function -Wno-unused-variable -Wno-unknown-pragmas 
+CCFLAGS += -Wextra -Wno-unused-function -Wno-unused-variable -Wno-unknown-pragmas
 #-Wunused-parameter -Wconversion
 CCFLAGS += -fno-math-errno -pipe -ffunction-sections -fdata-sections -ffast-math -fno-strict-aliasing
 CCFLAGS += -fsingle-precision-constant -finline-functions-called-once
@@ -202,6 +202,7 @@ endif
 LDFLAGS =
 LDFLAGS += -z noseparate-code -z noexecstack -mcpu=cortex-m0 -nostartfiles -Wl,-L,linker -Wl,-T,$(LD_FILE) -Wl,--gc-sections
 LDFLAGS += -Wl,--build-id=none
+LDFLAGS += -flto=1
 LDFLAGS += -Wl,-Map,$(BUILD)/$(PROJECT_NAME).map
 
 # Use newlib-nano instead of newlib
@@ -470,7 +471,7 @@ INC_PATHS = $(addprefix -I,$(INCLUDE_PATH))
 all: directories app
 
 # Create necessary directories
-directories:	
+directories:
 	$(call ensure_dir,$(BUILD))
 	$(call ensure_dir,$(BIN))
 
@@ -506,11 +507,11 @@ $(BUILD)/$(PROJECT_NAME).out: $(OBJECTS)
 	@$(CC) $(CCFLAGS) $(LDFLAGS) $^ -o $@
 
 #------------------------------------------------------------------------------
-#------------------- Binary generator -----------------------------------------	
+#------------------- Binary generator -----------------------------------------
 	@echo Create $(notdir $@)
-	@$(OBJCOPY) -O binary $(BUILD)/$(PROJECT_NAME).out $(BIN)/$(PROJECT_NAME).bin	
+	@$(OBJCOPY) -O binary $(BUILD)/$(PROJECT_NAME).out $(BIN)/$(PROJECT_NAME).bin
 
-prog: all	
+prog: all
 	@echo Create $(PROJECT_NAME).packed.bin
 	@-$(MY_PYTHON) utils/fw-pack.py $(BIN)/$(PROJECT_NAME).bin $(AUTHOR_STRING) $(VERSION_STRING) $(BIN)/$(PROJECT_NAME).packed.bin
 	@echo Flashing firmware to device...

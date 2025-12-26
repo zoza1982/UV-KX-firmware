@@ -35,14 +35,67 @@
 
 static const uint16_t FSK_RogerTable[7] = {0xF1A2, 0x7446, 0x61A4, 0x6544, 0x4E8A, 0xE044, 0xEA84};
 
-static const uint8_t DTMF_TONE1_GAIN = 65;
-static const uint8_t DTMF_TONE2_GAIN = 93;
-
 static uint16_t gBK4819_GpioOutState;
 
 bool gRxIdleMode;
 
-__inline uint16_t scale_freq(const uint16_t freq)
+#ifdef ENABLE_DTMF
+static const uint8_t DTMF_TONE1_GAIN = 65;
+static const uint8_t DTMF_TONE2_GAIN = 93;
+
+struct DTMF_TonePair {
+    uint16_t tone1;
+    uint16_t tone2;
+};
+
+static const struct DTMF_TonePair DTMF_TONES[] = {
+    {941, 1336},
+    {697, 1209},
+    {697, 1336},
+    {697, 1477},
+    {770, 1209},
+    {770, 1336},
+    {770, 1477},
+    {852, 1209},
+    {852, 1336},
+    {852, 1477},
+    {697, 1633},
+    {770, 1633},
+    {852, 1633},
+    {941, 1633},
+    {941, 1209},
+    {941, 1477},
+};
+#endif
+
+struct reg_value {
+    BK4819_REGISTER_t reg;
+    uint16_t value;
+};
+
+static const struct reg_value RogerMDC_Configuration[] = {
+    { BK4819_REG_58, 0x37C3 },  // FSK Enable,
+                                    // RX Bandwidth FFSK 1200/1800
+                                    // 0xAA or 0x55 Preamble
+                                    // 11 RX Gain,
+                                    // 101 RX Mode
+                                    // TX FFSK 1200/1800
+    { BK4819_REG_72, 0x3065 },  // Set Tone-2 to 1200Hz
+    { BK4819_REG_70, 0x00E0 },  // Enable Tone-2 and Set Tone2 Gain
+    { BK4819_REG_5D, 0x0D00 },  // Set FSK data length to 13 bytes
+    { BK4819_REG_59, 0x8068 },  // 4 byte sync length, 6 byte preamble, clear TX FIFO
+    { BK4819_REG_59, 0x0068 },  // Same, but clear TX FIFO is now unset (clearing done)
+    { BK4819_REG_5A, 0x5555 },  // First two sync bytes
+    { BK4819_REG_5B, 0x55AA },  // End of sync bytes. Total 4 bytes: 555555aa
+    { BK4819_REG_5C, 0xAA30 },  // Disable CRC
+};
+
+static const int8_t gLnaShortTab[] = {-28, -24, -19, 0};
+static const int8_t gLnaTab[] = {-24, -19, -14, -9, -6, -4, -2, 0};
+static const int8_t gMixerTab[] = {-8, -6, -3, 0};
+static const int8_t gPgaTab[] = {-33, -27, -21, -15, -9, -6, -3, 0};
+
+static inline uint16_t scale_freq(const uint16_t freq)
 {
 //  return (((uint32_t)freq * 1032444u) + 50000u) / 100000u;   // with rounding
     return (((uint32_t)freq * 1353245u) + (1u << 16)) >> 17;   // with rounding
@@ -350,11 +403,7 @@ int8_t BK4819_GetRxGain_dB(void)
     reg7e.__raw = BK4819_ReadRegister(BK4819_REG_7E);
     uint8_t gainAddr = reg7e.gainIdx < 0 ? BK4819_REG_14 : BK4819_REG_10 + reg7e.gainIdx;
     agcGainReg.__raw = BK4819_ReadRegister(gainAddr);
-    int8_t lnaShortTab[] = {-28, -24, -19, 0};
-    int8_t lnaTab[] = {-24, -19, -14, -9, -6, -4, -2, 0};
-    int8_t mixerTab[] = {-8, -6, -3, 0};
-    int8_t pgaTab[] = {-33, -27, -21, -15, -9, -6, -3, 0};
-    return lnaShortTab[agcGainReg.lnaS] + lnaTab[agcGainReg.lna] + mixerTab[agcGainReg.mixer] + pgaTab[agcGainReg.pga];
+    return gLnaShortTab[agcGainReg.lnaS] + gLnaTab[agcGainReg.lna] + gMixerTab[agcGainReg.mixer] + gPgaTab[agcGainReg.pga];
 }
 
 int16_t BK4819_GetRSSI_dBm(void)
@@ -1186,6 +1235,7 @@ void BK4819_Conditional_RX_TurnOn_and_GPIO6_Enable(void)
     }
 }
 
+#if defined(ENABLE_DTMF)
 void BK4819_EnterDTMF_TX(bool bLocalLoopback)
 {
     BK4819_EnableDTMF();
@@ -1211,6 +1261,17 @@ void BK4819_ExitDTMF_TX(bool bKeep)
     if (!bKeep)
         BK4819_ExitTxMute();
 }
+#else
+void BK4819_EnterDTMF_TX(bool bLocalLoopback)
+{
+    (void)bLocalLoopback;
+}
+
+void BK4819_ExitDTMF_TX(bool bKeep)
+{
+    (void)bKeep;
+}
+#endif
 
 void BK4819_EnableTXLink(void)
 {
@@ -1227,41 +1288,16 @@ void BK4819_EnableTXLink(void)
         BK4819_REG_30_DISABLE_RX_DSP);
 }
 
+#if defined(ENABLE_DTMF)
 void BK4819_PlayDTMF(char Code)
 {
-
-    struct DTMF_TonePair {
-        uint16_t tone1;
-        uint16_t tone2;
-    };
-
-    const struct DTMF_TonePair tones[] = {
-        {941, 1336},
-        {697, 1209},
-        {697, 1336},
-        {697, 1477},
-        {770, 1209},
-        {770, 1336},
-        {770, 1477},
-        {852, 1209},
-        {852, 1336},
-        {852, 1477},
-        {697, 1633},
-        {770, 1633},
-        {852, 1633},
-        {941, 1633},
-        {941, 1209},
-        {941, 1477},
-    };
-
-
     const struct DTMF_TonePair *pSelectedTone = NULL;
     switch (Code)
     {
-        case '0'...'9': pSelectedTone = &tones[0  + Code - '0']; break;
-        case 'A'...'D': pSelectedTone = &tones[10 + Code - 'A']; break;
-        case '*': pSelectedTone = &tones[14]; break;
-        case '#': pSelectedTone = &tones[15]; break;
+        case '0'...'9': pSelectedTone = &DTMF_TONES[0  + Code - '0']; break;
+        case 'A'...'D': pSelectedTone = &DTMF_TONES[10 + Code - 'A']; break;
+        case '*': pSelectedTone = &DTMF_TONES[14]; break;
+        case '#': pSelectedTone = &DTMF_TONES[15]; break;
         default: pSelectedTone = NULL;
     }
 
@@ -1295,6 +1331,22 @@ void BK4819_PlayDTMFString(const char *pString, bool bDelayFirst, uint16_t First
         SYSTEM_DelayMs(CodeInternalTime);
     }
 }
+#else
+void BK4819_PlayDTMF(char Code)
+{
+    (void)Code;
+}
+
+void BK4819_PlayDTMFString(const char *pString, bool bDelayFirst, uint16_t FirstCodePersistTime, uint16_t HashCodePersistTime, uint16_t CodePersistTime, uint16_t CodeInternalTime)
+{
+    (void)pString;
+    (void)bDelayFirst;
+    (void)FirstCodePersistTime;
+    (void)HashCodePersistTime;
+    (void)CodePersistTime;
+    (void)CodeInternalTime;
+}
+#endif
 
 void BK4819_TransmitTone(bool bLocalLoopback, uint32_t Frequency)
 {
@@ -1720,28 +1772,6 @@ static void BK4819_PlayRogerNormal(void)
 
 void BK4819_PlayRogerMDC(void)
 {
-    struct reg_value {
-        BK4819_REGISTER_t reg;
-        uint16_t value;
-    };
-
-    struct reg_value RogerMDC_Configuration [] = {
-        { BK4819_REG_58, 0x37C3 },  // FSK Enable,
-                                        // RX Bandwidth FFSK 1200/1800
-                                        // 0xAA or 0x55 Preamble
-                                        // 11 RX Gain,
-                                        // 101 RX Mode
-                                        // TX FFSK 1200/1800
-        { BK4819_REG_72, 0x3065 },  // Set Tone-2 to 1200Hz
-        { BK4819_REG_70, 0x00E0 },  // Enable Tone-2 and Set Tone2 Gain
-        { BK4819_REG_5D, 0x0D00 },  // Set FSK data length to 13 bytes
-        { BK4819_REG_59, 0x8068 },  // 4 byte sync length, 6 byte preamble, clear TX FIFO
-        { BK4819_REG_59, 0x0068 },  // Same, but clear TX FIFO is now unset (clearing done)
-        { BK4819_REG_5A, 0x5555 },  // First two sync bytes
-        { BK4819_REG_5B, 0x55AA },  // End of sync bytes. Total 4 bytes: 555555aa
-        { BK4819_REG_5C, 0xAA30 },  // Disable CRC
-    };
-
     BK4819_SetAF(BK4819_AF_MUTE);
 
     for (unsigned int i = 0; i < ARRAY_SIZE(RogerMDC_Configuration); i++) {
@@ -1791,6 +1821,7 @@ void BK4819_SetScrambleFrequencyControlWord(uint32_t Frequency)
     BK4819_WriteRegister(BK4819_REG_71, scale_freq(Frequency));
 }
 
+#if defined(ENABLE_DTMF)
 void BK4819_PlayDTMFEx(bool bLocalLoopback, char Code)
 {
     BK4819_EnableDTMF();
@@ -1812,3 +1843,10 @@ void BK4819_PlayDTMFEx(bool bLocalLoopback, char Code)
 
     BK4819_ExitTxMute();
 }
+#else
+void BK4819_PlayDTMFEx(bool bLocalLoopback, char Code)
+{
+    (void)bLocalLoopback;
+    (void)Code;
+}
+#endif

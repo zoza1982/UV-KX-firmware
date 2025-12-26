@@ -18,6 +18,7 @@ ENABLE_VOX                      ?= 0
 ENABLE_ALARM                    ?= 0
 ENABLE_TX1750                   ?= 1
 ENABLE_DTMF_CALLING             ?= 0
+ENABLE_DTMF                     ?= 0
 
 # ---- CUSTOM MODS ----
 ENABLE_SPECTRUM                 ?= 1
@@ -325,6 +326,9 @@ ifeq ($(ENABLE_SCANLIST),1)
 endif
 ifeq ($(ENABLE_DTMF_CALLING),1)
 	CCFLAGS  += -DENABLE_DTMF_CALLING
+endif
+ifeq ($(ENABLE_DTMF),1)
+	CCFLAGS  += -DENABLE_DTMF
 endif
 ifeq ($(ENABLE_AGC_SHOW_DATA),1)
 	CCFLAGS  += -DENABLE_AGC_SHOW_DATA

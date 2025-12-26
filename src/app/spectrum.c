@@ -1433,8 +1433,8 @@ static void RenderStill()
     uint8_t s = DBm2S(dbm);
     sprintf(String, "S: %u", s);
     UI_SetFont(UI_FONT_8_TR);
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 20, true, false, false, String);
-    UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 40, 0, 20, true, false, false,
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 20, true, false, false, String);
+    UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 45, 0, 20, true, false, false,
                    "%d dBm", dbm);
 
     if (!monitorMode)

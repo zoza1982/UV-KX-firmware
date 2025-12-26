@@ -44,7 +44,7 @@ void UI_DisplayWelcome(void)
 
     UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 10, true, false, false, "Hello !");
 
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 20, true, false, false, "UV-Kx Open Firmware");
+    UI_DrawString(UI_TEXT_ALIGN_CENTER, 0, 128, 20, true, true, false, "UV-Kx Open Firmware");
 
     UI_DrawBatteryIcon(BATTERY_VoltsToPercent(gBatteryVoltageAverage), 20, 30);
 
@@ -55,8 +55,8 @@ void UI_DisplayWelcome(void)
     UI_DrawString(UI_TEXT_ALIGN_LEFT, 64, 0, 51, true, false, false, "FM");
 
     UI_SetFont(FONT_5_TR);
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 42, true, false, false, "64");
-    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 51, true, false, false, "YES");
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 42, true, true, false, "64");
+    UI_DrawString(UI_TEXT_ALIGN_LEFT, 110, 0, 51, true, true, false, "YES");
 
     UI_DrawBox(0, 57, 128, 7);
     UI_DrawString(UI_TEXT_ALIGN_CENTER, 0, 128, 63, false, false, false, AUTHOR_STRING_2 " - " VERSION_STRING_2 " - " EDITION_STRING " EDITION");

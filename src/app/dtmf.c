@@ -35,6 +35,8 @@
 #include "ui/ui.h"
 #include "ui/gui.h"
 
+#ifdef ENABLE_DTMF
+
 char              gDTMF_String[15];
 
 char              gDTMF_InputBox[15];
@@ -498,3 +500,106 @@ void DTMF_Reply(void)
 
     BK4819_ExitDTMF_TX(false);
 }
+
+#else  /* ENABLE_DTMF */
+
+char              gDTMF_String[15] = {0};
+char              gDTMF_InputBox[15] = {0};
+uint8_t           gDTMF_InputBox_Index = 0;
+bool              gDTMF_InputMode      = false;
+uint8_t           gDTMF_PreviousIndex  = 0;
+char              gDTMF_RX_live[20] = {0};
+uint8_t           gDTMF_RX_live_timeout = 0;
+DTMF_ReplyState_t gDTMF_ReplyState = DTMF_REPLY_NONE;
+
+#ifdef ENABLE_DTMF_CALLING
+char              gDTMF_RX[17] = {0};
+uint8_t           gDTMF_RX_index   = 0;
+uint8_t           gDTMF_RX_timeout = 0;
+bool              gDTMF_RX_pending = false;
+
+bool              gIsDtmfContactValid = false;
+char              gDTMF_ID[4] = {0};
+char              gDTMF_Caller[4] = {0};
+char              gDTMF_Callee[4] = {0};
+DTMF_State_t      gDTMF_State = DTMF_STATE_0;
+uint8_t           gDTMF_DecodeRingCountdown_500ms = 0;
+uint8_t           gDTMF_chosen_contact = 0;
+uint8_t           gDTMF_auto_reset_time_500ms = 0;
+DTMF_CallState_t  gDTMF_CallState = DTMF_CALL_STATE_NONE;
+DTMF_CallMode_t   gDTMF_CallMode = DTMF_CALL_MODE_NOT_GROUP;
+
+bool              gDTMF_IsTx = false;
+uint8_t           gDTMF_TxStopCountdown_500ms = 0;
+bool              gDTMF_IsGroupCall = false;
+#endif
+
+void DTMF_SendEndOfTransmission(void)
+{
+}
+
+bool DTMF_ValidateCodes(char *pCode, const unsigned int size)
+{
+    (void)pCode;
+    (void)size;
+    return false;
+}
+
+char DTMF_GetCharacter(const unsigned int code)
+{
+    (void)code;
+    return 0;
+}
+
+void DTMF_clear_input_box(void)
+{
+    memset(gDTMF_InputBox, 0, sizeof(gDTMF_InputBox));
+    gDTMF_InputBox_Index = 0;
+    gDTMF_InputMode      = false;
+}
+
+void DTMF_Append(const char code)
+{
+    (void)code;
+}
+
+void DTMF_Reply(void)
+{
+}
+
+#ifdef ENABLE_DTMF_CALLING
+void DTMF_clear_RX(void)
+{
+    gDTMF_RX_timeout = 0;
+    gDTMF_RX_index   = 0;
+    gDTMF_RX_pending = false;
+    memset(gDTMF_RX, 0, sizeof(gDTMF_RX));
+}
+
+DTMF_CallMode_t DTMF_CheckGroupCall(const char *pMsg, const unsigned int size)
+{
+    (void)pMsg;
+    (void)size;
+    return DTMF_CALL_MODE_NOT_GROUP;
+}
+
+bool DTMF_GetContact(const int Index, char *pContact)
+{
+    (void)Index;
+    (void)pContact;
+    return false;
+}
+
+bool DTMF_FindContact(const char *pContact, char *pResult)
+{
+    (void)pContact;
+    (void)pResult;
+    return false;
+}
+
+void DTMF_HandleRequest(void)
+{
+}
+#endif
+
+#endif

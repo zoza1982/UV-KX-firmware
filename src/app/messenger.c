@@ -4,6 +4,7 @@
 #include "printf.h"
 #include "driver/keyboard.h"
 #include "driver/bk4819.h"
+#include "driver/eeprom.h"
 #include "misc.h"
 #include "settings.h"
 #include "radio.h"
@@ -30,8 +31,6 @@ static const uint8_t MAX_MSG_LENGTH = TX_MSG_LENGTH - 1;
 
 const uint16_t TONE2_FREQ = 0x3065; // 0x2854
 
-#define NEXT_CHAR_DELAY 100 // 10ms tick
-
 static const char T9TableUp[9][4] = { {',', '.', '?', '!'}, {'A', 'B', 'C', '\0'}, {'D', 'E', 'F', '\0'}, {'G', 'H', 'I', '\0'}, {'J', 'K', 'L', '\0'}, {'M', 'N', 'O', '\0'}, {'P', 'Q', 'R', 'S'}, {'T', 'U', 'V', '\0'}, {'W', 'X', 'Y', 'Z'} };
 static const uint8_t numberOfLettersAssignedToKey[9] = { 4, 3, 3, 3, 3, 3, 4, 3, 4 };
 
@@ -41,8 +40,8 @@ static const uint8_t numberOfNumsAssignedToKey[9] = { 1, 1, 1, 1, 1, 1, 1, 1, 1 
 char cMessage[TX_MSG_LENGTH];
 char lastcMessage[TX_MSG_LENGTH];
 char rxMessage[MAX_LINES][MAX_RX_MSG_LENGTH + 2];
-unsigned char cIndex = 0;
-unsigned char prevKey = 0, prevLetter = 0;
+uint8_t cIndex = 0;
+uint8_t prevKey = 0, prevLetter = 0;
 KeyboardType keyboardType = UPPERCASE;
 
 MsgStatus msgStatus = READY;
@@ -540,8 +539,42 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 		return;
 	}
 
-	const size_t msg_len = strnlen(txMessage, TX_MSG_LENGTH);
-	if ( msg_len > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
+	const size_t user_len = strnlen(txMessage, TX_MSG_LENGTH);
+	if ( user_len > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
+		char prefixed[TX_MSG_LENGTH] = {0};
+		const char *payload = txMessage;
+
+		if (!bServiceMessage) {
+			char station_id[17] = {0};
+			EEPROM_ReadBuffer(0x0EB0, station_id, 16);
+			station_id[16] = '\0';
+
+			size_t id_len = 0;
+			while (id_len < 16 && station_id[id_len] != '\0' && (uint8_t)station_id[id_len] != 0xFF) {
+				id_len++;
+			}
+			while (id_len > 0 && station_id[id_len - 1] == ' ') {
+				id_len--;
+			}
+
+			if (id_len > 0) {
+				size_t pos = 0;
+				const size_t max_len = TX_MSG_LENGTH - 1;
+				const size_t copy_id = (id_len < max_len) ? id_len : max_len;
+				memcpy(prefixed, station_id, copy_id);
+				pos = copy_id;
+				if (pos < max_len) {
+					prefixed[pos++] = '#';
+				}
+				if (pos < max_len) {
+					const size_t copy_msg = (user_len < (max_len - pos)) ? user_len : (max_len - pos);
+					memcpy(prefixed + pos, txMessage, copy_msg);
+				}
+				payload = prefixed;
+			}
+		}
+
+		const size_t msg_len = strnlen(payload, TX_MSG_LENGTH);
 
 		msgStatus = SENDING;
 
@@ -556,7 +589,7 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 		msgFSKBuffer[1] = 'S';
 
 		// next 20 for msg
-		memcpy(msgFSKBuffer + 2, txMessage, msg_len);
+		memcpy(msgFSKBuffer + 2, payload, msg_len);
 
 		// CRC ? ToDo
 
@@ -595,9 +628,9 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 		MSG_EnableRX(true);
 		if (!bServiceMessage) {
 			moveUP(rxMessage);
-			snprintf(rxMessage[MAX_LINES - 1], sizeof(rxMessage[MAX_LINES - 1]), "> %.*s", (int)msg_len, txMessage);
+			snprintf(rxMessage[MAX_LINES - 1], sizeof(rxMessage[MAX_LINES - 1]), "> %.*s", (int)user_len, txMessage);
 			memset(lastcMessage, 0, sizeof(lastcMessage));
-			memcpy(lastcMessage, txMessage, msg_len);
+			memcpy(lastcMessage, txMessage, user_len);
 			cIndex = 0;
 			prevKey = 0;
 			prevLetter = 0;
@@ -772,6 +805,53 @@ static void processBackspace() {
     prevLetter = 0;
 }
 
+uint8_t MSG_GetPrevKey(void) {
+	return prevKey;
+}
+
+uint8_t MSG_GetPrevLetter(void) {
+	return prevLetter;
+}
+
+bool MSG_IsChoosingChar(void) {
+	return (prevKey != 0 && keyTickCounter < MSG_NEXT_CHAR_DELAY);
+}
+
+void MSG_TimeoutInput(void) {
+	if (prevKey == 0 || keyTickCounter <= MSG_NEXT_CHAR_DELAY) {
+		return;
+	}
+	prevKey = 0;
+	prevLetter = 0;
+	gUpdateDisplay = true;
+}
+
+uint8_t MSG_GetKeyChars(uint8_t key, char out[MSG_KEY_CHARS_MAX]) {
+	if (out == NULL) {
+		return 0;
+	}
+	if (key > KEY_9) {
+		return 0;
+	}
+	if (key == KEY_0) {
+		out[0] = (keyboardType == NUMERIC) ? '0' : ' ';
+		return 1;
+	}
+
+	const char (*t9_table)[4] = (keyboardType == NUMERIC) ? T9TableNum : T9TableUp;
+	const uint8_t *t9_counts = (keyboardType == NUMERIC) ? numberOfNumsAssignedToKey : numberOfLettersAssignedToKey;
+	const uint8_t idx = (uint8_t)(key - 1);
+	uint8_t count = t9_counts[idx];
+
+	if (count > MSG_KEY_CHARS_MAX) {
+		count = MSG_KEY_CHARS_MAX;
+	}
+	for (uint8_t i = 0; i < count; ++i) {
+		out[i] = t9_table[idx][i];
+	}
+	return count;
+}
+
 void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 
 	if (bKeyPressed && bKeyHeld) {
@@ -803,7 +883,7 @@ void  MSG_ProcessKeys(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) {
 			case KEY_7:
 			case KEY_8:
 			case KEY_9:
-				if ( keyTickCounter > NEXT_CHAR_DELAY) {
+				if ( keyTickCounter >= MSG_NEXT_CHAR_DELAY) {
 					prevKey = 0;
     				prevLetter = 0;
 				}

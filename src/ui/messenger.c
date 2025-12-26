@@ -51,7 +51,25 @@ void UI_DisplayMSG(void) {
     }
 
 	UI_SetFont(FONT_8_TR);
-	UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 2, 0, 62, false, false, false, "%s_", cMessage);
+	if (MSG_IsChoosingChar()) {
+		const uint8_t key = MSG_GetPrevKey();
+		const uint8_t sel = MSG_GetPrevLetter();
+		char chars[MSG_KEY_CHARS_MAX];
+		const uint8_t count = MSG_GetKeyChars(key, chars);
+		uint8_t x = 2;
+		const uint8_t y = 55;
+		//UI_SetFont(FONT_5_TR);
+		for (uint8_t i = 0; i < count; ++i) {
+			char s[2] = {chars[i], '\0'};
+			const bool invert = (i == sel);
+			UI_DrawString(UI_TEXT_ALIGN_LEFT, x, 0, y, true, invert, false, s);
+			x = (uint8_t)(x + 10);
+		}
+		//UI_SetFont(FONT_8_TR);
+		UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 2, 0, 62, false, false, false, "%s", cMessage);
+	} else {
+		UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 2, 0, 62, false, false, false, "%s_", cMessage);
+	}
 
 	UI_UpdateDisplay();
 }

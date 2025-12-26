@@ -1373,7 +1373,12 @@ void APP_TimeSlice10ms(void)
     gFlashLightBlinkCounter++;
 
 #ifdef ENABLE_MESSENGER
-	keyTickCounter++;
+	if (keyTickCounter <= MSG_NEXT_CHAR_DELAY) {
+		keyTickCounter++;
+	}
+	if (keyTickCounter > MSG_NEXT_CHAR_DELAY) {
+		MSG_TimeoutInput();
+	}
 #endif
 
 #ifdef ENABLE_AM_FIX

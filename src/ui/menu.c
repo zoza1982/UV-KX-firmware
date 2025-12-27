@@ -66,7 +66,7 @@ const t_menu_item MenuList[] =
         {"SC ADD2",     MENU_S_ADD2        },
         {"SC ADD3",     MENU_S_ADD3        },
     #endif
-        //{"CH SAVE",     MENU_MEM_CH        }, // was "MEM-CH"
+        {"CH SAVE",     MENU_MEM_CH        }, // was "MEM-CH"
         //{"CH DELETE",   MENU_DEL_CH        }, // was "DEL-CH"
         //{"CH NAME",     MENU_MEM_NAME      },
 
@@ -1197,7 +1197,7 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
             BATTERY_VoltsToPercent(gBatteryVoltageAverage)
         );
         break;
-        //case MENU_MEM_CH:
+    case MENU_MEM_CH:
     case MENU_1_CALL:
         //case MENU_DEL_CH:
     {
@@ -1299,8 +1299,8 @@ void UI_DisplayMenu(void)
 
     UI_SelectionList_Draw(&menuList, 15, getCurrentOption());
 
-    if ((UI_MENU_GetCurrentMenuId() == MENU_RESET /*||
-        UI_MENU_GetCurrentMenuId() == MENU_MEM_CH ||
+    if ((UI_MENU_GetCurrentMenuId() == MENU_RESET ||
+        UI_MENU_GetCurrentMenuId() == MENU_MEM_CH/* ||
         UI_MENU_GetCurrentMenuId() == MENU_MEM_NAME ||
         UI_MENU_GetCurrentMenuId() == MENU_DEL_CH*/) && gAskForConfirmation)
     {   // display confirmation

@@ -25,7 +25,7 @@ ENABLE_DTMF_CALLING             ?= 0
 ENABLE_DTMF                     ?= 0
 
 # ---- CUSTOM MODS ----
-ENABLE_SPECTRUM                 ?= 0
+ENABLE_SPECTRUM                 ?= 1
 ENABLE_KEEP_MEM_NAME            ?= 1
 ENABLE_WIDE_RX                  ?= 1
 ENABLE_TX_WHEN_AM               ?= 0

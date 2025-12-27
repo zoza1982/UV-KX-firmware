@@ -603,9 +603,7 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 
 		//RADIO_SetTxParameters();
 		FUNCTION_Select(FUNCTION_TRANSMIT);
-		//SYSTEM_DelayMs(500);
-		//BK4819_PlayRogerNormal(98);
-		SYSTEM_DelayMs(100);
+		BK4819_PlaySingleTone(1000, 120, 28, false);
 
 		//BK4819_ExitTxMute();
 		

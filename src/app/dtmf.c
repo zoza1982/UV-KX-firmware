@@ -536,6 +536,9 @@ bool              gDTMF_IsGroupCall = false;
 
 void DTMF_SendEndOfTransmission(void)
 {
+    if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
+        BK4819_PlaySingleTone(2475, 250, 28, gEeprom.DTMF_SIDE_TONE);
+    }
 }
 
 bool DTMF_ValidateCodes(char *pCode, const unsigned int size)

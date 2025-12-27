@@ -197,8 +197,10 @@ void FUNCTION_Transmit()
 
     // turn the RED LED on
     BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, true);
-
+    
+    #ifdef ENABLE_DTMF
     DTMF_Reply();
+    #endif
 
     if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO)
         BK4819_PlaySingleTone(2525, 250, 0, gEeprom.DTMF_SIDE_TONE);

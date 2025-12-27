@@ -1232,8 +1232,8 @@ static void OnKeyDown(uint8_t key)
         ToggleBacklight();
         break;
     case KEY_PTT:
-        SetState(STILL);
-        TuneToPeak();
+       /*SetState(STILL);
+        TuneToPeak();*/
         break;
     case KEY_MENU:
         break;
@@ -1498,7 +1498,7 @@ static void Render()
         RenderFreqInput();
         break;
     case STILL:
-        RenderStill();
+        //RenderStill();
         break;
     }
 
@@ -1534,7 +1534,7 @@ bool HandleUserInput()
             OnKeyDownFreqInput(kbd.current);
             break;
         case STILL:
-            OnKeyDownStill(kbd.current);
+            //OnKeyDownStill(kbd.current);
             break;
         }
     }

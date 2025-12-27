@@ -1251,6 +1251,15 @@ void BK4819_EnterDTMF_TX(bool bLocalLoopback)
     BK4819_EnableTXLink();
 }
 
+
+#else
+void BK4819_EnterDTMF_TX(bool bLocalLoopback)
+{
+    (void)bLocalLoopback;
+}
+
+#endif
+
 void BK4819_ExitDTMF_TX(bool bKeep)
 {
     BK4819_EnterTxMute();
@@ -1261,17 +1270,6 @@ void BK4819_ExitDTMF_TX(bool bKeep)
     if (!bKeep)
         BK4819_ExitTxMute();
 }
-#else
-void BK4819_EnterDTMF_TX(bool bLocalLoopback)
-{
-    (void)bLocalLoopback;
-}
-
-void BK4819_ExitDTMF_TX(bool bKeep)
-{
-    (void)bKeep;
-}
-#endif
 
 void BK4819_EnableTXLink(void)
 {

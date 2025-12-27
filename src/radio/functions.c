@@ -37,6 +37,9 @@
 #include "misc.h"
 #include "radio.h"
 #include "settings.h"
+#ifdef ENABLE_MESSENGER
+    #include "app/messenger.h"
+#endif
 #include "ui/ui.h"
 #include "ui/gui.h"
 
@@ -195,15 +198,22 @@ void FUNCTION_Transmit()
 
     RADIO_SetTxParameters();
 
+#ifdef ENABLE_MESSENGER
+    MSG_EnableRX(false);
+#endif
+
     // turn the RED LED on
     BK4819_ToggleGpioOut(BK4819_GPIO5_PIN1_RED, true);
     
-    #ifdef ENABLE_DTMF
     DTMF_Reply();
-    #endif
 
     if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO)
-        BK4819_PlaySingleTone(2525, 250, 0, gEeprom.DTMF_SIDE_TONE);
+        //BK4819_PlaySingleTone(2525, 250, 0, gEeprom.DTMF_SIDE_TONE);
+        BK4819_PlaySingleTone(2525, 250, 0, false);
+
+    // Restore TX audio path after any tone/DTMF so the mic is not muted.
+    RADIO_SetModulation(gCurrentVfo->Modulation);
+    BK4819_ExitTxMute();
 
 #if defined(ENABLE_ALARM) || defined(ENABLE_TX1750)
     if (gAlarmState != ALARM_STATE_OFF) {

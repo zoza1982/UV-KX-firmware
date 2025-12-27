@@ -83,9 +83,9 @@ void DTMF_clear_RX(void)
 
 void DTMF_SendEndOfTransmission(void)
 {
-    if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
+    /*if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
         BK4819_PlaySingleTone(2475, 250, 28, gEeprom.DTMF_SIDE_TONE);
-    }
+    }*/
 
     if ((gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_TX_DOWN || gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_BOTH)
 #ifdef ENABLE_DTMF_CALLING
@@ -112,7 +112,7 @@ void DTMF_SendEndOfTransmission(void)
         gEnableSpeaker = false;
     }
 
-    BK4819_ExitDTMF_TX(true);
+    //BK4819_ExitDTMF_TX(true);
 }
 
 bool DTMF_ValidateCodes(char *pCode, const unsigned int size)
@@ -536,9 +536,6 @@ bool              gDTMF_IsGroupCall = false;
 
 void DTMF_SendEndOfTransmission(void)
 {
-    if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
-        BK4819_PlaySingleTone(2475, 250, 28, gEeprom.DTMF_SIDE_TONE);
-    }
 }
 
 bool DTMF_ValidateCodes(char *pCode, const unsigned int size)

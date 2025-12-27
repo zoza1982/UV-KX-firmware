@@ -1232,7 +1232,13 @@ void RADIO_SendCssTail(void)
 void RADIO_SendEndOfTransmission(void)
 {
     BK4819_PlayRoger();
+    
     DTMF_SendEndOfTransmission();
+    if (gCurrentVfo->DTMF_PTT_ID_TX_MODE == PTT_ID_APOLLO) {
+        //BK4819_PlaySingleTone(2475, 250, 28, gEeprom.DTMF_SIDE_TONE);
+        BK4819_PlaySingleTone(2475, 250, 28, false);
+    }
+    BK4819_ExitDTMF_TX(true);
 
     // send the CTCSS/DCS tail tone - allows the receivers to mute the usual FM squelch tail/crash
     if(gEeprom.TAIL_TONE_ELIMINATION)

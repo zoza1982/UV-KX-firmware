@@ -1045,34 +1045,37 @@ static void ShowChannelName(uint32_t f)
 
 static void ShowChannelName(uint32_t f) {
 
-    unsigned int i;
+    unsigned int i, line = 0;
     char s[12];
-    memset(String, 0, sizeof(String));
+    //memset(String, 0, sizeof(String));
 
     if (isListening) {
+        UI_SetFont(UI_FONT_8_TR);
         for (i = 0; IS_MR_CHANNEL(i); i++) {
             if (RADIO_CheckValidChannel(i, false, 0)) {
                 if (SETTINGS_FetchChannelFrequency(i) == f) {
                     memset(s, 0, sizeof(s));
                     SETTINGS_FetchChannelName(s, i);
                     if (s[0] != 0) {
-                        if (strlen(String) != 0)
+                        /*if (strlen(String) != 0)
                             strcat(String, "/");   // Add a space to result
-                        strcat(String, s);
+                        strcat(String, s);*/
+                        UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 16 + (line * 8), true, false, false, s);
+                        line++;
                     }
                 }
             }
         }
     }
-    if (String[0] != 0) {
+    /*if (String[0] != 0) {
         if (strlen(String) > 19) {
             String[19] = 0;
         }        
 
-        UI_SetFont(UI_FONT_8_TR);
+        
         UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 16, true, false, false, String);
 
-    }
+    }*/
 }
 
 static void DrawF(uint32_t f)

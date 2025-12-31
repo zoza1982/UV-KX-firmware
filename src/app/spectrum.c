@@ -25,7 +25,7 @@
 
 #include "driver/backlight.h"
 #include "frequencies.h"
-//#include "ui/helper.h"
+ //#include "ui/helper.h"
 #include "ui/main.h"
 
 #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
@@ -50,7 +50,7 @@ static char String[32];
 bool isInitialized = false;
 bool isListening = true;
 bool monitorMode = false;
-bool redrawStatus = true;
+//bool redrawStatus = true;
 bool redrawScreen = false;
 bool newScanStart = true;
 bool preventKeypress = true;
@@ -61,18 +61,18 @@ State currentState = SPECTRUM, previousState = SPECTRUM;
 
 PeakInfo peak;
 ScanInfo scanInfo;
-KeyboardState kbd = {KEY_INVALID, KEY_INVALID, 0};
+KeyboardState kbd = { KEY_INVALID, KEY_INVALID, 0 };
 
 #ifdef ENABLE_SCAN_RANGES
 static uint16_t blacklistFreqs[15];
 static uint8_t blacklistFreqsIdx;
 #endif
 
-const char *bwOptions[] = {"25", "12.5", "6.25"};
-const uint8_t modulationTypeTuneSteps[] = {100, 50, 10};
-const uint8_t modTypeReg47Values[] = {1, 7, 5};
+const char* bwOptions[] = { "25", "12.5", "6.25" };
+const uint8_t modulationTypeTuneSteps[] = { 100, 50, 10 };
+const uint8_t modTypeReg47Values[] = { 1, 7, 5 };
 
-SpectrumSettings settings = {.stepsCount = STEPS_64,
+SpectrumSettings settings = { .stepsCount = STEPS_64,
                              .scanStepIndex = S_STEP_25_0kHz,
                              .frequencyChangeStep = 80000,
                              .scanDelay = 3200,
@@ -82,7 +82,7 @@ SpectrumSettings settings = {.stepsCount = STEPS_64,
                              .listenBw = BK4819_FILTER_BW_WIDE,
                              .modulationType = false,
                              .dbMin = -130,
-                             .dbMax = -50};
+                             .dbMax = -50 };
 
 uint32_t fMeasure = 0;
 uint32_t currentFreq, tempFreq;
@@ -106,18 +106,18 @@ RegisterSpec registerSpecs[] = {
 };
 
 #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
-const int8_t LNAsOptions[] = {-19, -16, -11, 0};
-const int8_t LNAOptions[] = {-24, -19, -14, -9, -6, -4, -2, 0};
-const int8_t VGAOptions[] = {-33, -27, -21, -15, -9, -6, -3, 0};
-const char *BPFOptions[] = {"8.46", "7.25", "6.35", "5.64", "5.08", "4.62", "4.23"};
+const int8_t LNAsOptions[] = { -19, -16, -11, 0 };
+const int8_t LNAOptions[] = { -24, -19, -14, -9, -6, -4, -2, 0 };
+const int8_t VGAOptions[] = { -33, -27, -21, -15, -9, -6, -3, 0 };
+const char* BPFOptions[] = { "8.46", "7.25", "6.35", "5.64", "5.08", "4.62", "4.23" };
 #endif
 
-uint16_t statuslineUpdateTimer = 0;
+//uint16_t statuslineUpdateTimer = 0;
 
 #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 static void LoadSettings()
 {
-    uint8_t Data[8] = {0};
+    uint8_t Data[8] = { 0 };
     // 1FF0..0x1FF7
     EEPROM_ReadBuffer(0x1FF0, Data, 8);
 
@@ -145,7 +145,7 @@ static void LoadSettings()
 
 static void SaveSettings()
 {
-    uint8_t Data[8] = {0};
+    uint8_t Data[8] = { 0 };
     // 1FF0..0x1FF7
     EEPROM_ReadBuffer(0x1FF0, Data, 8);
 
@@ -212,15 +212,15 @@ static void SetRegMenuValue(uint8_t st, bool add)
 
 // GUI functions
 
-static bool Spectrum_IsDisplayReady(void)
+/*static bool Spectrum_IsDisplayReady(void)
 {
     return gUiCtx.lcd != NULL;
-}
+}*/
 
 static void DrawPixel(int x, int y)
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     if (x < 0 || x >= UI_W || y < 0 || y >= UI_H)
         return;
@@ -230,8 +230,8 @@ static void DrawPixel(int x, int y)
 
 static void DrawVLine(int sy, int ey, int nx)
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     if (nx < 0 || nx >= UI_W)
         return;
@@ -251,7 +251,7 @@ static void DrawVLine(int sy, int ey, int nx)
         ey = UI_H - 1;
 
     u8g2_DrawVLine(gUiCtx.lcd, (u8g2_uint_t)nx, (u8g2_uint_t)sy,
-                   (u8g2_uint_t)(ey - sy + 1));
+        (u8g2_uint_t)(ey - sy + 1));
 }
 
 // Utility functions
@@ -278,7 +278,7 @@ void SetState(State state)
     previousState = currentState;
     currentState = state;
     redrawScreen = true;
-    redrawStatus = true;
+    //redrawStatus = true;
 }
 
 // Radio functions
@@ -356,16 +356,16 @@ static void ResetPeak()
 }
 
 #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
-    static void setTailFoundInterrupt()
-    {
-        BK4819_WriteRegister(BK4819_REG_3F, BK4819_REG_02_CxCSS_TAIL | BK4819_REG_02_SQUELCH_FOUND);
-    }
+static void setTailFoundInterrupt()
+{
+    BK4819_WriteRegister(BK4819_REG_3F, BK4819_REG_02_CxCSS_TAIL | BK4819_REG_02_SQUELCH_FOUND);
+}
 
-    static bool checkIfTailFound()
-    {
-      uint16_t interrupt_status_bits;
-      // if interrupt waiting to be handled
-      if(BK4819_ReadRegister(BK4819_REG_0C) & 1u) {
+static bool checkIfTailFound()
+{
+    uint16_t interrupt_status_bits;
+    // if interrupt waiting to be handled
+    if (BK4819_ReadRegister(BK4819_REG_0C) & 1u) {
         // reset the interrupt
         BK4819_WriteRegister(BK4819_REG_02, 0);
         // fetch the interrupt status bits
@@ -380,9 +380,9 @@ static void ResetPeak()
             BK4819_WriteRegister(BK4819_REG_02, 0);
             return true;
         }
-      }
-      return false;
     }
+    return false;
+}
 #endif
 
 bool IsCenterMode() { return settings.scanStepIndex < S_STEP_2_5kHz; }
@@ -485,11 +485,11 @@ static void ToggleAudio(bool on)
 
 static void ToggleRX(bool on)
 {
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
+#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     if (isListening == on) {
         return;
     }
-    #endif
+#endif
     isListening = on;
 
     RADIO_SetupAGC(settings.modulationType == MODULATION_AM, lockAGC);
@@ -501,14 +501,14 @@ static void ToggleRX(bool on)
 
     if (on)
     {
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
+#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
         listenT = 100;
         BK4819_WriteRegister(0x43, listenBWRegValues[settings.listenBw]);
         setTailFoundInterrupt();
-    #else
+#else
         listenT = 1000;
         BK4819_WriteRegister(0x43, listenBWRegValues[settings.listenBw]);
-    #endif
+#endif
     }
     else
     {
@@ -574,7 +574,7 @@ static void UpdateScanInfo()
     {
         scanInfo.rssiMin = scanInfo.rssi;
         settings.dbMin = Rssi2DBm(scanInfo.rssiMin);
-        redrawStatus = true;
+        //redrawStatus = true;
     }
 }
 
@@ -633,7 +633,7 @@ static void ClampRssiTriggerLevel()
 {
     settings.rssiTriggerLevel =
         clamp(settings.rssiTriggerLevel, dbm2rssi(settings.dbMin),
-              dbm2rssi(settings.dbMax));
+            dbm2rssi(settings.dbMax));
 }
 
 static void UpdateRssiTriggerLevel(bool inc)
@@ -646,7 +646,7 @@ static void UpdateRssiTriggerLevel(bool inc)
     ClampRssiTriggerLevel();
 
     redrawScreen = true;
-    redrawStatus = true;
+    //redrawStatus = true;
 }
 
 static void UpdateDBMax(bool inc)
@@ -665,7 +665,7 @@ static void UpdateDBMax(bool inc)
     }
 
     ClampRssiTriggerLevel();
-    redrawStatus = true;
+    //redrawStatus = true;
     redrawScreen = true;
     SYSTEM_DelayMs(20);
 }
@@ -920,95 +920,96 @@ uint8_t Rssi2Y(uint16_t rssi)
 }
 
 #ifdef ENABLE_FEAT_F4HWN
-    static void DrawSpectrum()
-    {
-        uint16_t steps = GetStepsCount();
-        // max bars at 128 to correctly draw larger numbers of samples
-        uint8_t bars = (steps > 128) ? 128 : steps;
+static void DrawSpectrum()
+{
+    uint16_t steps = GetStepsCount();
+    // max bars at 128 to correctly draw larger numbers of samples
+    uint8_t bars = (steps > 128) ? 128 : steps;
 
-        uint8_t ox = 0;
-        for (uint8_t i = 0; i < bars; ++i)
-        {
-            uint16_t rssi = rssiHistory[(bars>128) ? i >> settings.stepsCount : i];
-            
+    uint8_t ox = 0;
+    for (uint8_t i = 0; i < bars; ++i)
+    {
+        uint16_t rssi = rssiHistory[(bars > 128) ? i >> settings.stepsCount : i];
+
 #ifdef ENABLE_SCAN_RANGES
-            uint8_t x;
-            if (gScanRangeStart && bars > 1)
+        uint8_t x;
+        if (gScanRangeStart && bars > 1)
+        {
+            // Total width units = (bars - 1) full bars + 2 half bars = bars
+            // First bar: half width, middle bars: full width, last bar: half width
+            // Scale: 128 pixels / (bars - 1) = pixels per full bar
+            uint16_t fullWidth = 128 * 2 / (bars - 1);  // x2 for precision
+
+            if (i == 0)
             {
-                // Total width units = (bars - 1) full bars + 2 half bars = bars
-                // First bar: half width, middle bars: full width, last bar: half width
-                // Scale: 128 pixels / (bars - 1) = pixels per full bar
-                uint16_t fullWidth = 128 * 2 / (bars - 1);  // x2 for precision
-                
-                if (i == 0)
-                {
-                    x = fullWidth / 4;  // half of half (because fullWidth is x2)
-                }
-                else
-                {
-                    // Position = half + (i-1) full bars + current bar
-                    x = fullWidth / 4 + (uint16_t)i * fullWidth / 2;
-                    if (i == bars - 1) x = 128;  // Last bar ends at screen edge
-                }
+                x = fullWidth / 4;  // half of half (because fullWidth is x2)
             }
             else
+            {
+                // Position = half + (i-1) full bars + current bar
+                x = fullWidth / 4 + (uint16_t)i * fullWidth / 2;
+                if (i == bars - 1) x = 128;  // Last bar ends at screen edge
+            }
+        }
+        else
 #endif
-            {
-                uint8_t shift_graph = 64 / steps + 1;
-                x = i * 128 / bars + shift_graph;
-            }
-
-            if (rssi != RSSI_MAX_VALUE)
-            {
-                for (uint8_t xx = ox; xx < x; xx++)
-                {
-                    DrawVLine(Rssi2Y(rssi), DrawingEndY, xx);
-                }
-            }
-            ox = x;
-        }
-    }
-#else
-    static void DrawSpectrum()
-    {
-        for (uint8_t x = 0; x < 128; ++x)
         {
-            uint16_t rssi = rssiHistory[x >> settings.stepsCount];
-            if (rssi != RSSI_MAX_VALUE)
+            uint8_t shift_graph = 64 / steps + 1;
+            x = i * 128 / bars + shift_graph;
+        }
+
+        if (rssi != RSSI_MAX_VALUE)
+        {
+            for (uint8_t xx = ox; xx < x; xx++)
             {
-                DrawVLine(Rssi2Y(rssi), DrawingEndY, x);
+                DrawVLine(Rssi2Y(rssi), DrawingEndY, xx);
             }
         }
+        ox = x;
     }
+}
+#else
+static void DrawSpectrum()
+{
+    for (uint8_t x = 0; x < 128; ++x)
+    {
+        uint16_t rssi = rssiHistory[x >> settings.stepsCount];
+        if (rssi != RSSI_MAX_VALUE)
+        {
+            DrawVLine(Rssi2Y(rssi), DrawingEndY, x);
+        }
+    }
+}
 #endif
 
 static void DrawStatus()
 {
 #ifdef SPECTRUM_EXTRA_VALUES
     sprintf(String, "%d/%d P:%d T:%d", settings.dbMin, settings.dbMax,
-            Rssi2DBm(peak.rssi), Rssi2DBm(settings.rssiTriggerLevel));
+        Rssi2DBm(peak.rssi), Rssi2DBm(settings.rssiTriggerLevel));
 #else
     sprintf(String, "%d/%d", settings.dbMin, settings.dbMax);
 #endif
     BOARD_ADC_GetBatteryInfo(&gBatteryVoltages[gBatteryCheckCounter++ % 4],
-                             &gBatteryCurrent);
+        &gBatteryCurrent);
 
     uint16_t voltage = (gBatteryVoltages[0] + gBatteryVoltages[1] +
-                        gBatteryVoltages[2] + gBatteryVoltages[3]) /
-                       4 * 760 / gBatteryCalibration[3];
+        gBatteryVoltages[2] + gBatteryVoltages[3]) /
+        4 * 760 / gBatteryCalibration[3];
 
     unsigned perc = BATTERY_VoltsToPercent(voltage);
 
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     UI_SetFont(UI_FONT_5_TR);
     UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 6, true, false, false, String);
     UI_DrawBatteryIcon(perc, 112, 0);
     UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 110, 6, true, false, false, "%u%%",
-                   perc);
+        perc);
 }
 
+/*
 #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
 static void ShowChannelName(uint32_t f)
 {
@@ -1040,11 +1041,44 @@ static void ShowChannelName(uint32_t f)
     }
 }
 #endif
+*/
+
+static void ShowChannelName(uint32_t f) {
+
+    unsigned int i;
+    char s[12];
+    memset(String, 0, sizeof(String));
+
+    if (isListening) {
+        for (i = 0; IS_MR_CHANNEL(i); i++) {
+            if (RADIO_CheckValidChannel(i, false, 0)) {
+                if (SETTINGS_FetchChannelFrequency(i) == f) {
+                    memset(s, 0, sizeof(s));
+                    SETTINGS_FetchChannelName(s, i);
+                    if (s[0] != 0) {
+                        if (strlen(String) != 0)
+                            strcat(String, "/");   // Add a space to result
+                        strcat(String, s);
+                    }
+                }
+            }
+        }
+    }
+    if (String[0] != 0) {
+        if (strlen(String) > 19) {
+            String[19] = 0;
+        }        
+
+        UI_SetFont(UI_FONT_8_TR);
+        UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 16, true, false, false, String);
+
+    }
+}
 
 static void DrawF(uint32_t f)
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     /*UI_SetFont(UI_FONT_8_TR);
     {
@@ -1055,18 +1089,18 @@ static void DrawF(uint32_t f)
     UI_DrawFrequencySmall(false, f, 65, 8);
 
     UI_SetFont(UI_FONT_5_TR);
-    UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 5, true, false, false,
-                   "%s %sK", gModulationStr[settings.modulationType], bwOptions[settings.listenBw]);
+    UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 12, true, false, false,
+        "%s %sK", gModulationStr[settings.modulationType], bwOptions[settings.listenBw]);
 
-//#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
-//    ShowChannelName(f);
-//#endif
+
+    ShowChannelName(f);
+
 }
 
 static void DrawNums()
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     UI_SetFont(UI_FONT_5_TR);
     if (currentState == SPECTRUM)
@@ -1081,30 +1115,30 @@ static void DrawNums()
         {
             sprintf(String, "%uX", GetStepsCount());
         }
-        
-       //UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 48, true, false, false, String);
-        UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 12, true, false, false,
-                       "%s %u.%02uK", String, GetScanStep() / 100, GetScanStep() % 100);
+
+        //UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 48, true, false, false, String);
+        UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 19, true, false, false,
+            "%s %u.%02uK", String, GetScanStep() / 100, GetScanStep() % 100);
     }
 
     if (IsCenterMode())
-    {        
+    {
         UI_DrawStringf(UI_TEXT_ALIGN_CENTER, 0, 127, 63, true, false, false,
-                       "%u.%05u %u.%02uK", currentFreq / 100000,
-                       currentFreq % 100000,
-                       settings.frequencyChangeStep / 100,
-                       settings.frequencyChangeStep % 100);
+            "%u.%05u %u.%02uK", currentFreq / 100000,
+            currentFreq % 100000,
+            settings.frequencyChangeStep / 100,
+            settings.frequencyChangeStep % 100);
     }
     else
     {
-        
+
         UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 0, 0, 63, true, false, false,
-                       "%u.%05u", GetFStart() / 100000, GetFStart() % 100000);
+            "%u.%05u", GetFStart() / 100000, GetFStart() % 100000);
         UI_DrawStringf(UI_TEXT_ALIGN_CENTER, 0, 127, 63, true, false, false,
-                       "%u.%02uK", settings.frequencyChangeStep / 100,
-                       settings.frequencyChangeStep % 100);
+            "%u.%02uK", settings.frequencyChangeStep / 100,
+            settings.frequencyChangeStep % 100);
         UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 127, 63, true, false, false,
-                       "%u.%05u", GetFEnd() / 100000, GetFEnd() % 100000);
+            "%u.%05u", GetFEnd() / 100000, GetFEnd() % 100000);
     }
 }
 
@@ -1113,7 +1147,7 @@ static void DrawRssiTriggerLevel()
     if (settings.rssiTriggerLevel == RSSI_MAX_VALUE || monitorMode)
         return;
     uint8_t y = Rssi2Y(settings.rssiTriggerLevel);
-    for (uint8_t x = 0; x < 128; x += 2)
+    for (uint8_t x = 0; x < 128; x += 3)
     {
         DrawPixel(x, y);
     }
@@ -1121,8 +1155,8 @@ static void DrawRssiTriggerLevel()
 
 static void DrawTicks()
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     const uint32_t f_start = GetFStart();
     uint32_t f = f_start;
@@ -1232,8 +1266,8 @@ static void OnKeyDown(uint8_t key)
         ToggleBacklight();
         break;
     case KEY_PTT:
-       /*SetState(STILL);
-        TuneToPeak();*/
+        /*SetState(STILL);
+         TuneToPeak();*/
         break;
     case KEY_MENU:
         break;
@@ -1385,17 +1419,18 @@ void OnKeyDownStill(KEY_Code_t key)
 
 static void RenderFreqInput()
 {
-    if (!Spectrum_IsDisplayReady())
-        return;
+    /*if (!Spectrum_IsDisplayReady())
+        return;*/
 
     UI_SetFont(UI_FONT_10_TR);
     UI_DrawString(UI_TEXT_ALIGN_CENTER, 0, 127, 32, true, false, false,
-                  freqInputString);
+        freqInputString);
 }
 
 static void RenderStatus()
 {
     //DrawStatus();
+    UI_DrawBatteryIcon(BATTERY_VoltsToPercent(gBatteryVoltageAverage), 114, 0);
 }
 
 static void RenderSpectrum()
@@ -1408,7 +1443,7 @@ static void RenderSpectrum()
     DrawNums();
 }
 
-static void RenderStill()
+/*static void RenderStill()
 {
     DrawF(fMeasure);
 
@@ -1483,6 +1518,7 @@ static void RenderStill()
                       !selected, false, false, String);
     }
 }
+*/
 
 static void Render()
 {
@@ -1501,7 +1537,7 @@ static void Render()
         //RenderStill();
         break;
     }
-
+    RenderStatus();
     UI_UpdateDisplay();
 }
 
@@ -1548,7 +1584,7 @@ static void Scan()
 #ifdef ENABLE_SCAN_RANGES
         && !IsBlacklisted(scanInfo.i)
 #endif
-    )
+        )
     {
         SetF(scanInfo.f);
         Measure();
@@ -1573,9 +1609,9 @@ static void UpdateScan()
         return;
     }
 
-    if (! (scanInfo.measurementsCount >> 7)) // if (scanInfo.measurementsCount < 128)
+    if (!(scanInfo.measurementsCount >> 7)) // if (scanInfo.measurementsCount < 128)
         memset(&rssiHistory[scanInfo.measurementsCount], 0,
-               sizeof(rssiHistory) - scanInfo.measurementsCount * sizeof(rssiHistory[0]));
+            sizeof(rssiHistory) - scanInfo.measurementsCount * sizeof(rssiHistory[0]));
 
     redrawScreen = true;
     preventKeypress = false;
@@ -1591,7 +1627,7 @@ static void UpdateScan()
     newScanStart = true;
 }
 
-static void UpdateStill()
+/*static void UpdateStill()
 {
     Measure();
     redrawScreen = true;
@@ -1603,17 +1639,17 @@ static void UpdateStill()
     if (IsPeakOverLevel() || monitorMode) {
         ToggleRX(true);
     }
-}
+}*/
 
 static void UpdateListening()
 {
     preventKeypress = false;
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
+#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
     bool tailFound = checkIfTailFound();
     if (tailFound)
-    #else
+#else
     if (currentState == STILL)
-    #endif
+#endif
     {
         listenT = 0;
     }
@@ -1638,19 +1674,19 @@ static void UpdateListening()
     peak.rssi = scanInfo.rssi;
     redrawScreen = true;
 
-    #ifdef ENABLE_FEAT_F4HWN_SPECTRUM
-        if ((IsPeakOverLevel() && !tailFound) || monitorMode)
-        {
-            listenT = 100;
-            return;
-        }
-    #else
-        if (IsPeakOverLevel() || monitorMode)
-        {
-            listenT = 1000;
-            return;
-        }
-    #endif
+#ifdef ENABLE_FEAT_F4HWN_SPECTRUM
+    if ((IsPeakOverLevel() && !tailFound) || monitorMode)
+    {
+        listenT = 100;
+        return;
+    }
+#else
+    if (IsPeakOverLevel() || monitorMode)
+    {
+        listenT = 1000;
+        return;
+    }
+#endif
 
     ToggleRX(false);
     ResetScanStats();
@@ -1711,17 +1747,17 @@ static void Tick()
         {
             UpdateScan();
         }
-        else if (currentState == STILL)
+        /*else if (currentState == STILL)
         {
             UpdateStill();
-        }
+        }*/
     }
-    if (redrawStatus || ++statuslineUpdateTimer > 4096)
+    /*if (redrawStatus || ++statuslineUpdateTimer > 4096)
     {
         RenderStatus();
         redrawStatus = false;
         statuslineUpdateTimer = 0;
-    }
+    }*/
     if (redrawScreen)
     {
         Render();
@@ -1750,27 +1786,27 @@ void APP_RunSpectrum()
             }
         }
         settings.stepsCount = STEPS_128;
-        #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
-            gEeprom.CURRENT_STATE = 5;
-        #endif
+#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
+        gEeprom.CURRENT_STATE = 5;
+#endif
     }
     else {
 #endif
         currentFreq = initialFreq = gTxVfo->pRX->Frequency -
-                                    ((GetStepsCount() / 2) * GetScanStep());
-        #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
-            gEeprom.CURRENT_STATE = 4;
-        #endif
+            ((GetStepsCount() / 2) * GetScanStep());
+#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
+        gEeprom.CURRENT_STATE = 4;
+#endif
     }
 
-    #ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
-        SETTINGS_WriteCurrentState();
-    #endif
+#ifdef ENABLE_FEAT_F4HWN_RESUME_STATE
+    SETTINGS_WriteCurrentState();
+#endif
 
     BackupRegisters();
 
     isListening = true; // to turn off RX later
-    redrawStatus = true;
+    //redrawStatus = true;
     redrawScreen = true;
     newScanStart = true;
 

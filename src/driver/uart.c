@@ -42,7 +42,9 @@ void UART_Init(void)
     }
 
     //UART1->BAUD = Frequency / 39053U;
-    UART1->BAUD = Frequency / 115200;
+    //UART1->BAUD = Frequency / 38400U;
+    //UART1->BAUD = Frequency / 115200U;
+    UART1->BAUD = Frequency / 115853U;
     UART1->CTRL = UART_CTRL_RXEN_BITS_ENABLE | UART_CTRL_TXEN_BITS_ENABLE | UART_CTRL_RXDMAEN_BITS_ENABLE;
     UART1->RXTO = 4;
     UART1->FC = 0;

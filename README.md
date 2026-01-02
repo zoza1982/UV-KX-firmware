@@ -17,6 +17,8 @@
 <img src="images/uv-k5-screenshot-3.png" alt="Menu" width="400" />
 <img src="images/uv-k5-screenshot-5.png" alt="Messenger" width="400" />
 
+# UV-Kx Web tools
+You can use [UV-Kx Web tools](https://home.joaquim.org/k5/) to manage your radio data (channels, settings, etc.) from your web browser. It works with Quansheng UV-K5/K6/5R and compatible custom firmwares (including this one).
 
 # Open re-implementation of the Quansheng UV-K5/K6/5R v2.1.27 firmware
 
@@ -48,6 +50,7 @@ Special thanks to Jean-Cyrille F6IWW (2 times), Fabrice 14RC123, David F4BPP, Ol
 
 - [My fork of Quansheng UV-K5/K6/5R custom firmware](#my-fork-of-quansheng-uv-k5k65r-custom-firmware)
   - [..... Work in PROGRESS - not for everyday use](#-work-in-progress---not-for-everyday-use)
+- [UV-Kx Web tools](#uv-kx-web-tools)
 - [Open re-implementation of the Quansheng UV-K5/K6/5R v2.1.27 firmware](#open-re-implementation-of-the-quansheng-uv-k5k65r-v2127-firmware)
 - [Donations](#donations)
   - [Table of Contents](#table-of-contents)

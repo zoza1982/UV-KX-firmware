@@ -490,13 +490,24 @@ void UI_DisplayMain(void)
 
     if (IS_MR_CHANNEL(gEeprom.ScreenChannel[vfoA]))
     {   // channel mode
-        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 22, true, false, false, "M-%03u", gEeprom.ScreenChannel[vfoA] + 1);
+        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 21, true, false, false, "M-%03u", gEeprom.ScreenChannel[vfoA] + 1);
     }
     else if (IS_FREQ_CHANNEL(gEeprom.ScreenChannel[vfoA]))
     {   // frequency mode
         // show the frequency band number
-        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 22, true, false, false, "F-%03u", 1 + gEeprom.ScreenChannel[vfoA] - FREQ_CHANNEL_FIRST);
+        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 21, true, false, false, "F-%03u", 1 + gEeprom.ScreenChannel[vfoA] - FREQ_CHANNEL_FIRST);
     }
+
+    if(gCurrentFunction == FUNCTION_TRANSMIT && gSetting_set_tmr == true)
+    {
+        uint16_t t = gTxTimerCountdown_500ms / 2;
+
+        uint8_t m = t / 60;
+        uint8_t s = t - (m * 60); // Replace modulo with subtraction for efficiency
+
+        UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 1, 0, 27, true, false, false, "%02u:%02u", m, s);            
+    }
+    
     
     UI_SetFont(FONT_5_TR);
 

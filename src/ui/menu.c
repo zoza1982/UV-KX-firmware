@@ -113,8 +113,8 @@ const t_menu_item MenuList[] =
     #ifdef ENABLE_DTMF_CALLING
         {"ANI ID",      MENU_ANI_ID        },
     #endif
-        {"UPCODE",      MENU_UPCODE        },
-        {"DWCODE",      MENU_DWCODE        },
+        //{"UPCODE",      MENU_UPCODE        },
+        //{"DWCODE",      MENU_DWCODE        },
         {"PTT ID",      MENU_PTT_ID        },
         {"D ST",        MENU_D_ST          },
     #ifdef ENABLE_DTMF_CALLING

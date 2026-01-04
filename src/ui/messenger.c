@@ -44,12 +44,16 @@ void UI_DisplayMSG(void) {
 	UI_SetFont(FONT_5_TR);
 
 	{
+		
 		const uint8_t vfo_index = gEeprom.TX_VFO;
 		const char vfo_letter = (vfo_index == 0) ? 'A' : 'B';
-		const uint32_t tx_freq = gEeprom.VfoInfo[vfo_index].pTX->Frequency;
-		const uint32_t mhz = tx_freq / 100000U;
-		const uint32_t khz = (tx_freq % 100000U) / 100U;
-		UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, false, false, "VFO %c %lu.%03luMHZ", vfo_letter, mhz, khz);
+
+		if (gLastRxStationIdLen > 0) {
+			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, false, false, "%s VFO %c", gLastRxStationId, vfo_letter);
+		} else {
+			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, false, false, "VFO %c", vfo_letter);
+		}
+		
 	}
 
 	uint8_t mPos = 14;

@@ -48,6 +48,11 @@ MsgStatus msgStatus = READY;
 
 uint8_t msgFSKBuffer[MSG_HEADER_LENGTH + MAX_RX_MSG_LENGTH];
 
+static char gStationId[17];
+static uint8_t gStationIdLen;
+char gLastRxStationId[17];
+uint8_t gLastRxStationIdLen;
+
 uint16_t gErrorsDuringMSG;
 
 uint8_t hasNewMessage = 0;
@@ -55,6 +60,45 @@ uint8_t hasNewMessage = 0;
 uint8_t keyTickCounter = 0;
 
 // -----------------------------------------------------
+
+static uint8_t MSG_CopyStationIdTrim(const char *src, size_t src_len, char out[17]) {
+	size_t len = 0;
+	while (len < src_len && src[len] != '\0' && (uint8_t)src[len] != 0xFF) {
+		len++;
+	}
+	while (len > 0 && src[len - 1] == ' ') {
+		len--;
+	}
+	if (len > 16) {
+		len = 16;
+	}
+	if (len == 0) {
+		out[0] = '\0';
+		return 0;
+	}
+	memcpy(out, src, len);
+	out[len] = '\0';
+	return (uint8_t)len;
+}
+
+static uint8_t MSG_ExtractStationIdFromBuffer(const uint8_t *buffer, size_t buffer_len, char out[17]) {
+	const size_t station_id_offset = 32;
+	if (buffer == NULL || buffer_len <= station_id_offset) {
+		out[0] = '\0';
+		return 0;
+	}
+	{
+		const size_t available = buffer_len - station_id_offset;
+		const size_t copy_len = (available > 16) ? 16 : available;
+		return MSG_CopyStationIdTrim((const char *)&buffer[station_id_offset], copy_len, out);
+	}
+}
+
+void MSG_LoadStationId(void) {
+	EEPROM_ReadBuffer(0x0EB0, gStationId, 16);
+	gStationId[16] = '\0';
+	gStationIdLen = MSG_CopyStationIdTrim(gStationId, 16, gStationId);
+}
 
 void MSG_FSKSendData() {
 
@@ -542,39 +586,25 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 	const size_t user_len = strnlen(txMessage, TX_MSG_LENGTH);
 	if ( user_len > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
 		char prefixed[TX_MSG_LENGTH] = {0};
-		const char *payload = txMessage;
+		//const char *payload = txMessage;
 
-		if (!bServiceMessage) {
-			char station_id[17] = {0};
-			EEPROM_ReadBuffer(0x0EB0, station_id, 16);
-			station_id[16] = '\0';
-
-			size_t id_len = 0;
-			while (id_len < 16 && station_id[id_len] != '\0' && (uint8_t)station_id[id_len] != 0xFF) {
-				id_len++;
+		/*if (!bServiceMessage && gStationIdLen > 0) {
+			size_t pos = 0;
+			const size_t max_len = TX_MSG_LENGTH - 1;
+			const size_t copy_id = (gStationIdLen < max_len) ? gStationIdLen : max_len;
+			memcpy(prefixed, gStationId, copy_id);
+			pos = copy_id;
+			if (pos < max_len) {
+				prefixed[pos++] = '>';
 			}
-			while (id_len > 0 && station_id[id_len - 1] == ' ') {
-				id_len--;
+			if (pos < max_len) {
+				const size_t copy_msg = (user_len < (max_len - pos)) ? user_len : (max_len - pos);
+				memcpy(prefixed + pos, txMessage, copy_msg);
 			}
+			payload = prefixed;
+		}*/
 
-			if (id_len > 0) {
-				size_t pos = 0;
-				const size_t max_len = TX_MSG_LENGTH - 1;
-				const size_t copy_id = (id_len < max_len) ? id_len : max_len;
-				memcpy(prefixed, station_id, copy_id);
-				pos = copy_id;
-				if (pos < max_len) {
-					prefixed[pos++] = '>';
-				}
-				if (pos < max_len) {
-					const size_t copy_msg = (user_len < (max_len - pos)) ? user_len : (max_len - pos);
-					memcpy(prefixed + pos, txMessage, copy_msg);
-				}
-				payload = prefixed;
-			}
-		}
-
-		const size_t msg_len = strnlen(payload, TX_MSG_LENGTH);
+		//const size_t msg_len = strnlen(txMessage, TX_MSG_LENGTH);
 
 		msgStatus = SENDING;
 
@@ -589,23 +619,31 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 		msgFSKBuffer[1] = 'S';
 
 		// next 20 for msg
-		memcpy(msgFSKBuffer + 2, payload, msg_len);
+		memcpy(msgFSKBuffer + 2, txMessage, user_len);
 
 		// CRC ? ToDo
 
 		msgFSKBuffer[MAX_RX_MSG_LENGTH - 1] = '\0';
-		msgFSKBuffer[MAX_RX_MSG_LENGTH + 0] = 'I';
-		msgFSKBuffer[MAX_RX_MSG_LENGTH + 1] = 'D';
-		msgFSKBuffer[MAX_RX_MSG_LENGTH + 2] = '0';
-		msgFSKBuffer[(MSG_HEADER_LENGTH + MAX_RX_MSG_LENGTH) - 1] = '>';
+
+		// Add ID
+		memcpy(msgFSKBuffer + MAX_RX_MSG_LENGTH, gStationId, gStationIdLen);
+
+		//msgFSKBuffer[MAX_RX_MSG_LENGTH + 0] = 'I';
+		//msgFSKBuffer[MAX_RX_MSG_LENGTH + 1] = 'D';
+		//msgFSKBuffer[MAX_RX_MSG_LENGTH + 2] = '0';
+		//msgFSKBuffer[(MSG_HEADER_LENGTH + MAX_RX_MSG_LENGTH) - 1] = '>';
 
 		BK4819_DisableDTMF();
 
 		//RADIO_SetTxParameters();
 		FUNCTION_Select(FUNCTION_TRANSMIT);
-		BK4819_PlaySingleTone(1000, 120, 28, false);
+		
+		BK4819_PlaySingleTone(1190, 200, 28, false);
+		BK4819_PlaySingleTone(992, 200, 28, false);
+		BK4819_PlaySingleTone(507, 200, 28, false);		
 
 		//BK4819_ExitTxMute();
+		//SYSTEM_DelayMs(100);
 		
 		MSG_FSKSendData();
 
@@ -691,19 +729,36 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 		msgStatus = READY;
 
 		if (gFSKWriteIndex > 2) {
-
+			/*#ifdef ENABLE_MESSENGER_UART
+			UART_printf("MSG RX LEN=%u\n", gFSKWriteIndex);
+			UART_printf("MSG DATA=");
+			for (size_t i = 0; i < gFSKWriteIndex; i++) {
+				UART_printf("%c", msgFSKBuffer[i]);
+			}
+			UART_printf("\n");
+			#endif*/
 			// If there's three 0x1b bytes, then it's a service message
 			if (msgFSKBuffer[2] == 0x1b && msgFSKBuffer[3] == 0x1b && msgFSKBuffer[4] == 0x1b) {
 			#ifdef ENABLE_MESSENGER_DELIVERY_NOTIFICATION
 				// If the next 4 bytes are "RCVD", then it's a delivery notification
 				if (msgFSKBuffer[5] == 'R' && msgFSKBuffer[6] == 'C' && msgFSKBuffer[7] == 'V' && msgFSKBuffer[8] == 'D') {
-					UART_printf("SVC<RCPT\n");
+					#ifdef ENABLE_MESSENGER_UART
+					char rcpt_station_id[17];
+					const size_t rcpt_len = MSG_CopyStationIdTrim((const char *)&msgFSKBuffer[MAX_RX_MSG_LENGTH], MAX_RX_MSG_LENGTH, rcpt_station_id);
+					if (rcpt_len > 0) {
+						UART_printf("SVC<RCPT[%s]\n", rcpt_station_id);
+					} else {
+						UART_printf("SVC<RCPT\n");
+					}
+					#endif
 					rxMessage[MAX_LINES - 1][strlen(rxMessage[MAX_LINES - 1])] = '+';
 					gUpdateStatus = true;
 					gUpdateDisplay = true;
 				}
 			#endif
 			} else {
+				gLastRxStationIdLen = MSG_ExtractStationIdFromBuffer(msgFSKBuffer, sizeof(msgFSKBuffer), gLastRxStationId);
+				
 				moveUP(rxMessage);
 				if (msgFSKBuffer[0] != 'M' || msgFSKBuffer[1] != 'S') {
 					snprintf(rxMessage[MAX_LINES - 1], TX_MSG_LENGTH + 2, "? unknown msg format!");
@@ -734,7 +789,24 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 		#ifdef ENABLE_MESSENGER_DELIVERY_NOTIFICATION		
 		// Transmit a message to the sender that we have received the message (Unless it's a service message)
 		if (msgFSKBuffer[0] == 'M' && msgFSKBuffer[1] == 'S' && msgFSKBuffer[2] != 0x1b) {
-			MSG_Send("\x1b\x1b\x1bRCVD", true);
+
+			char rcvd_payload[TX_MSG_LENGTH] = {0};
+			size_t pos = 0;
+			const size_t max_len = TX_MSG_LENGTH - 1;
+
+			rcvd_payload[pos++] = 0x1b;
+			rcvd_payload[pos++] = 0x1b;
+			rcvd_payload[pos++] = 0x1b;
+			memcpy(rcvd_payload + pos, "RCVD", 4);
+			pos += 4;
+			/*if (pos < max_len) {
+				const size_t copy_len = (gLastRxStationIdLen < (max_len - pos)) ? gLastRxStationIdLen : (max_len - pos);
+				memcpy(rcvd_payload + pos, gLastRxStationId, copy_len);
+				pos += copy_len;
+			}*/
+			rcvd_payload[pos] = '\0';
+			MSG_Send(rcvd_payload, true);
+		
 		}
 		#endif
 	}
@@ -749,6 +821,8 @@ void MSG_Init() {
 	prevKey = 0;
     prevLetter = 0;
 	cIndex = 0;
+	gLastRxStationIdLen = 0;
+	gLastRxStationId[0] = '\0';
 }
 
 // ---------------------------------------------------------------------------------
@@ -809,6 +883,22 @@ uint8_t MSG_GetPrevKey(void) {
 
 uint8_t MSG_GetPrevLetter(void) {
 	return prevLetter;
+}
+
+bool MSG_GetLastRxStationId(char *out, size_t out_len) {
+	if (out == NULL || out_len == 0) {
+		return false;
+	}
+	if (gLastRxStationIdLen == 0) {
+		out[0] = '\0';
+		return false;
+	}
+	{
+		const size_t copy_len = (gLastRxStationIdLen < (out_len - 1)) ? gLastRxStationIdLen : (out_len - 1);
+		memcpy(out, gLastRxStationId, copy_len);
+		out[copy_len] = '\0';
+	}
+	return true;
 }
 
 bool MSG_IsChoosingChar(void) {

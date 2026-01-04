@@ -26,6 +26,9 @@
 #include "misc.h"
 #include "settings.h"
 #include "ui/menu.h"
+#ifdef ENABLE_MESSENGER
+    #include "app/messenger.h"
+#endif
 
 #ifdef ENABLE_FEAT_F4HWN_RESET_CHANNEL
 static const uint32_t gDefaultFrequencyTable[] =
@@ -391,6 +394,10 @@ void SETTINGS_InitEEPROM(void)
         // And set special session settings for actions
         gSetting_set_ptt_session = gSetting_set_ptt;
         gEeprom.KEY_LOCK_PTT = gSetting_set_lck;
+    #endif
+
+    #ifdef ENABLE_MESSENGER
+        MSG_LoadStationId();
     #endif
 }
 

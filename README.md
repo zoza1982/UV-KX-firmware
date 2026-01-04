@@ -1,6 +1,8 @@
 # My fork of Quansheng UV-K5/K6/5R custom firmware
 
-## ..... Work in PROGRESS - not for everyday use
+This repository is a fork of [Armel custom firmware](https://github.com/armel/uv-k5-firmware-custom)
+
+## ..... Work in PROGRESS - not for everyday use .....
 
 > [!WARNING]  
 > To test this version you must bear in mind that it can corrupt the data in the EEPROM, so you must make a backup before using this version.
@@ -38,9 +40,9 @@ Anyway, have fun.
 > _FR - CE FIRMWARE N'A PAS DE VÉRITABLE CERVEAU. VEUILLEZ UTILISER LE VÔTRE. Utilisez ce firmware à vos risques et périls. Il n'y a absolument aucune garantie qu'il fonctionnera d'une manière ou d'une autre sur votre (vos) radio(s), il peut même bousiller votre (vos) radio(s), dans ce cas, vous devrez acheter une autre radio. Quoi qu'il en soit, amusez-vous bien._
 
 > [!CAUTION]
-> EN - I recommend to backup your eeprom with [k5prog](https://github.com/sq5bpf/k5prog) before playing with alternative firmwares. It's a good reflex to have. 
+> EN - I recommend to backup your eeprom with [k5prog](https://home.joaquim.org/k5/) before playing with alternative firmwares. It's a good reflex to have. 
 >
-> _FR - Je recommande de sauvegarder votre eeprom avec [k5prog](https://github.com/sq5bpf/k5prog) avant de jouer avec des firmwares alternatifs. C'est un bon réflexe à avoir._
+> _FR - Je recommande de sauvegarder votre eeprom avec [k5prog](https://home.joaquim.org/k5/) avant de jouer avec des firmwares alternatifs. C'est un bon réflexe à avoir._
 
 # Donations
 
@@ -49,7 +51,7 @@ Special thanks to Jean-Cyrille F6IWW (2 times), Fabrice 14RC123, David F4BPP, Ol
 ## Table of Contents
 
 - [My fork of Quansheng UV-K5/K6/5R custom firmware](#my-fork-of-quansheng-uv-k5k65r-custom-firmware)
-  - [..... Work in PROGRESS - not for everyday use](#-work-in-progress---not-for-everyday-use)
+  - [..... Work in PROGRESS - not for everyday use .....](#-work-in-progress---not-for-everyday-use-)
 - [UV-Kx Web tools](#uv-kx-web-tools)
 - [Open re-implementation of the Quansheng UV-K5/K6/5R v2.1.27 firmware](#open-re-implementation-of-the-quansheng-uv-k5k65r-v2127-firmware)
 - [Donations](#donations)
@@ -59,9 +61,6 @@ Special thanks to Jean-Cyrille F6IWW (2 times), Fabrice 14RC123, David F4BPP, Ol
   - [Manual](#manual)
   - [Radio performance](#radio-performance)
   - [Compiler](#compiler)
-  - [Building](#building)
-    - [Github Codespace build method](#github-codespace-build-method)
-    - [Windows environment build method](#windows-environment-build-method)
   - [Credits](#credits)
   - [Other sources of information](#other-sources-of-information)
   - [License](#license)
@@ -240,58 +239,6 @@ You can get an appropriate version from: https://developer.arm.com/downloads/-/g
 
 clang may be used but isn't fully supported. Resulting binaries may also be bigger.
 You can get it from: https://releases.llvm.org/download.html
-
-## Building
-
-### Github Codespace build method
-
-This is the least demanding option as you don't have to install enything on your computer. All you need is Github account.
-
-1. Go to https://github.com/armel/uv-k5-firmware-custom
-1. Click green `Code` button
-1. Change tab from `Local` to `Codespace`
-1. Click green `Create codespace on main` button
-
-
-2. Open `Makefile`, edit build options and save changes
-3. If necessary, open `compile-with-docker.sh`, edit build versions and save changes
-4. Run in terminal window
-    - `./compile-with-docker.sh bandscope` to compile bandscope version
-    - `./compile-with-docker.sh broadcast` to compile broadcast version
-    - `./compile-with-docker.sh voxless` to compile voxless version
-    - `./compile-with-docker.sh all` to compile all versions 
-    - `./compile-with-docker.sh custom` to compile only with Makefile build options   
-5. Open folder `compiled-firmware`
-6. Right click `firmware.packed.bin`
-7. Click `Download`, now you should have a firmware on your computer that you can proceed to flash on your radio. You can use [online flasher](https://egzumer.github.io/uvtools)
-
-
-### Windows environment build method
-
-1. Open windows command line and run:
-    ```
-    winget install -e -h git.git Python.Python.3.8 GnuWin32.Make
-    winget install -e -h Arm.GnuArmEmbeddedToolchain -v "10 2021.10"
-    ```
-2. Close command line, open a new one and run:
-    ```
-    pip install --user --upgrade pip
-    pip install crcmod
-    mkdir c:\projects & cd /D c:/projects
-    git clone https://github.com/armel/uv-k5-firmware-custom.git
-    ```
-3. From now on you can build the firmware by going to `c:\projects\uv-k5-firmware-custom` and running `win_make.bat` or by running a command line:
-    ```
-    cd /D c:\projects\uv-k5-firmware-custom
-    win_make.bat
-    ```
-4. To reset the repository and pull new changes run (!!! it will delete all your changes !!!):
-    ```
-    cd /D c:\projects\uv-k5-firmware-custom
-    git reset --hard & git clean -fd & git pull
-    ```
-
-I've left some notes in the win_make.bat file to maybe help with stuff.
 
 ## Credits
 

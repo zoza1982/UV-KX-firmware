@@ -327,9 +327,9 @@ void SETTINGS_InitEEPROM(void)
     }
 
         // 0F30..0F3F
-        EEPROM_ReadBuffer(0x0F30, gCustomAesKey, sizeof(gCustomAesKey));
+        //EEPROM_ReadBuffer(0x0F30, gCustomAesKey, sizeof(gCustomAesKey));
         bHasCustomAesKey = false;
-        #ifndef ENABLE_FEAT_F4HWN
+        /*#ifndef ENABLE_FEAT_F4HWN
             for (unsigned int i = 0; i < ARRAY_SIZE(gCustomAesKey); i++)
             {
                 if (gCustomAesKey[i] != 0xFFFFFFFFu)
@@ -338,7 +338,7 @@ void SETTINGS_InitEEPROM(void)
                     return;
                 }
             }
-        #endif
+        #endif*/
 
     #ifdef ENABLE_FEAT_F4HWN
         // 1FF0..0x1FF7

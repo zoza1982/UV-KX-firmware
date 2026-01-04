@@ -19,6 +19,14 @@ This repository is a fork of [Armel custom firmware](https://github.com/armel/uv
 <img src="images/uv-k5-screenshot-3.png" alt="Menu" width="400" />
 <img src="images/uv-k5-screenshot-5.png" alt="Messenger" width="400" />
 
+# Differences from the original Armel firmware
+- Reorganized code layout: main code in `src/` and linker files in `linker/` for easier navigation/builds.
+- New U8G2-based GUI with custom fonts/icons (`fonts_icons/`, `src/ui/font/`) and a new welcome screen.
+- New screens/apps: Messenger and redesigned menu/UI (`src/app/messenger.c`, `src/ui/`).
+- Additional tools and assets: `display-explorer/` for display exploration and bundled `utils/k5prog`.
+- Prebuilt binaries in this fork under `firmware/` (`uv-kx_V1.0.bin` and `.packed.bin`);
+- Updated Makefile for easier compilation.
+
 # UV-Kx Web tools
 You can use [UV-Kx Web tools](https://home.joaquim.org/k5/) to manage your radio data (channels, settings, etc.) from your web browser. It works with Quansheng UV-K5/K6/5R and compatible custom firmwares (including this one).
 
@@ -52,6 +60,7 @@ Special thanks to Jean-Cyrille F6IWW (2 times), Fabrice 14RC123, David F4BPP, Ol
 
 - [My fork of Quansheng UV-K5/K6/5R custom firmware](#my-fork-of-quansheng-uv-k5k65r-custom-firmware)
   - [..... Work in PROGRESS - not for everyday use .....](#-work-in-progress---not-for-everyday-use-)
+- [Differences from the original Armel firmware](#differences-from-the-original-armel-firmware)
 - [UV-Kx Web tools](#uv-kx-web-tools)
 - [Open re-implementation of the Quansheng UV-K5/K6/5R v2.1.27 firmware](#open-re-implementation-of-the-quansheng-uv-k5k65r-v2127-firmware)
 - [Donations](#donations)

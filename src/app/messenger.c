@@ -564,7 +564,7 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 				memcpy(prefixed, station_id, copy_id);
 				pos = copy_id;
 				if (pos < max_len) {
-					prefixed[pos++] = '#';
+					prefixed[pos++] = '>';
 				}
 				if (pos < max_len) {
 					const size_t copy_msg = (user_len < (max_len - pos)) ? user_len : (max_len - pos);
@@ -597,7 +597,7 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 		msgFSKBuffer[MAX_RX_MSG_LENGTH + 0] = 'I';
 		msgFSKBuffer[MAX_RX_MSG_LENGTH + 1] = 'D';
 		msgFSKBuffer[MAX_RX_MSG_LENGTH + 2] = '0';
-		msgFSKBuffer[(MSG_HEADER_LENGTH + MAX_RX_MSG_LENGTH) - 1] = '#';
+		msgFSKBuffer[(MSG_HEADER_LENGTH + MAX_RX_MSG_LENGTH) - 1] = '>';
 
 		BK4819_DisableDTMF();
 

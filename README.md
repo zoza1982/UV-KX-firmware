@@ -13,11 +13,12 @@ This repository is a fork of [Armel custom firmware](https://github.com/armel/uv
 > Use this firmware at your own risk (entirely). There is absolutely no guarantee that it will work in any way shape or form on your radio(s), it may even brick your radio(s), in which case, you'd need to buy another radio.
 >
 
-<img src="images/uv-k5-screenshot-1.png" alt="VFO" width="400" />
-<img src="images/uv-k5-screenshot-4.png" alt="VFO RX" width="400" />
-<img src="images/uv-k5-screenshot-2.png" alt="MENU" width="400" />
-<img src="images/uv-k5-screenshot-3.png" alt="Menu" width="400" />
-<img src="images/uv-k5-screenshot-5.png" alt="Messenger" width="400" />
+<img src="images/uv-k5-screenshot-1.png" alt="VFO" width="524" />
+<img src="images/uv-k5-screenshot-4.png" alt="VFO RX" width="524" />
+<img src="images/uv-k5-screenshot-2.png" alt="MENU" width="524" />
+<img src="images/uv-k5-screenshot-3.png" alt="Menu" width="524" />
+<img src="images/uv-k5-screenshot-5.png" alt="Messenger" width="524" />
+<img src="images/uv-k5-screenshot_spectrum.png" alt="Spectrum Analyzer" width="524" />
 
 # Differences from the original Armel firmware
 - Reorganized code layout: main code in `src/` and linker files in `linker/` for easier navigation/builds.
@@ -26,6 +27,9 @@ This repository is a fork of [Armel custom firmware](https://github.com/armel/uv
 - Additional tools and assets: `display-explorer/` for display exploration and bundled `utils/k5prog`.
 - Prebuilt binaries in this fork under `firmware/` (`uv-kx_V1.0.bin` and `.packed.bin`);
 - Updated Makefile for easier compilation.
+
+- F+M to open Messenger app.
+- F+5 to open minimal Spectrum Analyzer app.
 
 # UV-Kx Web tools
 You can use [UV-Kx Web tools](https://home.joaquim.org/k5/) to manage your radio data (channels, settings, etc.) from your web browser. It works with Quansheng UV-K5/K6/5R and compatible custom firmwares (including this one).

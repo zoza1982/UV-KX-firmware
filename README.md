@@ -61,12 +61,10 @@ Special thanks to Jean-Cyrille F6IWW (2 times), Fabrice 14RC123, David F4BPP, Ol
   - [Compiler](#compiler)
   - [Building](#building)
     - [Github Codespace build method](#github-codespace-build-method)
-    - [Docker build method](#docker-build-method)
     - [Windows environment build method](#windows-environment-build-method)
   - [Credits](#credits)
   - [Other sources of information](#other-sources-of-information)
   - [License](#license)
-  - [Example changes/updates](#example-changesupdates)
 
 ## Main features and improvements from F4HWN:
 
@@ -254,28 +252,19 @@ This is the least demanding option as you don't have to install enything on your
 1. Change tab from `Local` to `Codespace`
 1. Click green `Create codespace on main` button
 
-<img src="images/Code_Space_1.png" width=700 />
 
-5. Open `Makefile`, edit build options and save changes
-1. If necessary, open `compile-with-docker.sh`, edit build versions and save changes
-1. Run in terminal window
+2. Open `Makefile`, edit build options and save changes
+3. If necessary, open `compile-with-docker.sh`, edit build versions and save changes
+4. Run in terminal window
     - `./compile-with-docker.sh bandscope` to compile bandscope version
     - `./compile-with-docker.sh broadcast` to compile broadcast version
     - `./compile-with-docker.sh voxless` to compile voxless version
     - `./compile-with-docker.sh all` to compile all versions 
     - `./compile-with-docker.sh custom` to compile only with Makefile build options   
-1. Open folder `compiled-firmware`
-1. Right click `firmware.packed.bin`
-1. Click `Download`, now you should have a firmware on your computer that you can proceed to flash on your radio. You can use [online flasher](https://egzumer.github.io/uvtools)
+5. Open folder `compiled-firmware`
+6. Right click `firmware.packed.bin`
+7. Click `Download`, now you should have a firmware on your computer that you can proceed to flash on your radio. You can use [online flasher](https://egzumer.github.io/uvtools)
 
-<img src="images/Code_Space_2.png" width=700 />
-
-### Docker build method
-
-If you have docker installed you can use [compile-with-docker.bat](./compile-with-docker.bat) (Windows) or [compile-with-docker.sh](./compile-with-docker.sh) (Linux/Mac), the output files are created in `compiled-firmware` folder. This method gives significantly smaller binaries, I've seen differences up to 1kb, so it can fit more functionalities this way. The challenge can be (or not) installing docker itself. 
-
-> [!TIP]
-> On Linux/Mac, you may need to uncomment and customize the DOCKER_NETWORK environment variable at the beginning of the [compile-with-docker.sh](./compile-with-docker.sh) script. Note: this can introduce security risks by removing network isolation. However, if you encounter issues and are using a specific network environment (with a proxy or a firewall), this may help.
 
 ### Windows environment build method
 
@@ -344,26 +333,3 @@ You may obtain a copy of the License at
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-
-## Example changes/updates
-
-Here are a few photos.
-
-|![Main Only and Dual RX Respond](https://github.com/armel/uv-k5-firmware-custom-feat-F4HWN/blob/main/photos/IMG_3291.png)|
-|:--:|
-| Main Only and Dual RX Respond |
-
-
-|![Main Only and Dual RX Respond (invert mode)](https://github.com/armel/uv-k5-firmware-custom-feat-F4HWN/blob/main/photos/IMG_3290.png)|
-|:--:|
-| Main Only and Dual RX Respond (invert mode) |
-
-
-|![Some new menu entries](https://github.com/armel/uv-k5-firmware-custom-feat-F4HWN/blob/main/photos/IMG_3292.png)|
-|:--:|
-| Some new menu entries |
-
-
-|![Main Only and Spectrum Analyzer](https://github.com/armel/uv-k5-firmware-custom-feat-F4HWN/blob/main/photos/IMG_3293.png)|
-|:--:|
-| Main Only and Spectrum Analyzer |

@@ -637,14 +637,14 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 
 		//RADIO_SetTxParameters();
 		FUNCTION_Select(FUNCTION_TRANSMIT);
-		
+
 		BK4819_PlaySingleTone(1190, 200, 28, false);
 		BK4819_PlaySingleTone(992, 200, 28, false);
-		BK4819_PlaySingleTone(507, 200, 28, false);		
+		BK4819_PlaySingleTone(507, 200, 28, false);
 
 		//BK4819_ExitTxMute();
 		//SYSTEM_DelayMs(100);
-		
+
 		MSG_FSKSendData();
 
 		SYSTEM_DelayMs(100);
@@ -758,7 +758,7 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 			#endif
 			} else {
 				gLastRxStationIdLen = MSG_ExtractStationIdFromBuffer(msgFSKBuffer, sizeof(msgFSKBuffer), gLastRxStationId);
-				
+
 				moveUP(rxMessage);
 				if (msgFSKBuffer[0] != 'M' || msgFSKBuffer[1] != 'S') {
 					snprintf(rxMessage[MAX_LINES - 1], TX_MSG_LENGTH + 2, "? unknown msg format!");
@@ -767,9 +767,9 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 				{
 					snprintf(rxMessage[MAX_LINES - 1], TX_MSG_LENGTH + 2, "< %s", &msgFSKBuffer[2]);
 					#ifdef ENABLE_MESSENGER_UART
-					UART_printf("SMS%s\n", rxMessage[MAX_LINES - 1]);
+					UART_printf("SMS[%s] %s\n", gLastRxStationIdLen > 0 ? gLastRxStationId : "NoID", rxMessage[MAX_LINES - 1]);
 					#endif
-				}			
+				}
 
 				if ( gScreenToDisplay != DISPLAY_MSG ) {
 					hasNewMessage = 1;
@@ -786,7 +786,7 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 		}
 
 		gFSKWriteIndex = 0;
-		#ifdef ENABLE_MESSENGER_DELIVERY_NOTIFICATION		
+		#ifdef ENABLE_MESSENGER_DELIVERY_NOTIFICATION
 		// Transmit a message to the sender that we have received the message (Unless it's a service message)
 		if (msgFSKBuffer[0] == 'M' && msgFSKBuffer[1] == 'S' && msgFSKBuffer[2] != 0x1b) {
 
@@ -806,7 +806,7 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 			}*/
 			rcvd_payload[pos] = '\0';
 			MSG_Send(rcvd_payload, true);
-		
+
 		}
 		#endif
 	}

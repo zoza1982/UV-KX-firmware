@@ -5,6 +5,8 @@ https://www.dafont.com/bitmap.php
 ## w=3, h=5
 .\bdfconv_2_22.exe -v -f 1 -m "32-95" '.\Teeny-Tiny-Pixls-5.bdf' -o ../src/ui/font/font_5_tr.h  -n u8g2_font_5_tr
 
+## w=5, h=7
+.\bdfconv_2_22.exe -v -f 1 -m "32-95" '.\SHAKAGRAPHICS04-8.bdf' -o ../src/ui/font/font_5_tr.h  -n u8g2_font_5_tr
 
 ## w=7, h=8
 .\bdfconv_2_22.exe -v -f 1 -m "32-125" '.\Uni0553-8.bdf' -o ../src/ui/font/font_8_tr.h  -n u8g2_font_8_tr

@@ -49,17 +49,17 @@ void UI_DisplayMSG(void) {
 		const char vfo_letter = (vfo_index == 0) ? 'A' : 'B';
 
 		if (gLastRxStationIdLen > 0) {
-			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, false, false, "%s VFO %c", gLastRxStationId, vfo_letter);
+			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, true, false, "%s VFO TX %c", gLastRxStationId, vfo_letter);
 		} else {
-			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, false, false, "VFO %c", vfo_letter);
+			UI_DrawStringf(UI_TEXT_ALIGN_RIGHT, 0, 126, 55, true, true, false, "VFO TX %c", vfo_letter);
 		}
 		
 	}
 
-	uint8_t mPos = 14;
+	uint8_t mPos = 13;
 	const uint8_t mLine = 7;
 	for (uint8_t i = 0; i < MAX_LINES; ++i) {
-		UI_DrawString(UI_TEXT_ALIGN_LEFT, 2, 0, mPos, true, false, false, rxMessage[i]);
+		UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, mPos, true, false, false, rxMessage[i]);
 		mPos += mLine;
     }
 

@@ -761,7 +761,7 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 
 				moveUP(rxMessage);
 				if (msgFSKBuffer[0] != 'M' || msgFSKBuffer[1] != 'S') {
-					snprintf(rxMessage[MAX_LINES - 1], TX_MSG_LENGTH + 2, "? unknown msg format!");
+					snprintf(rxMessage[MAX_LINES - 1], TX_MSG_LENGTH + 2, "? UNKNOWN FORMAT!");
 				}
 				else
 				{

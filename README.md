@@ -28,11 +28,13 @@ This repository is a fork of [Armel custom firmware](https://github.com/armel/uv
 - Prebuilt binaries in this fork under `firmware/` (`uv-kx_V1.0.bin` and `.packed.bin`);
 - Updated Makefile for easier compilation.
 
-- F+M to open Messenger app.
 - F+5 to open minimal Spectrum Analyzer app.
 
+- F+M to open Messenger app.
+<img src="images/UV-K5 - keypad - T9.jpg" alt="T9 keypad" width="524" width="524" />
+
 # UV-Kx Web tools
-You can use [UV-Kx Web tools](https://home.joaquim.org/k5/) to manage your radio data (channels, settings, etc.) from your web browser. It works with Quansheng UV-K5/K6/5R and compatible custom firmwares (including this one).
+You can use [UV-Kx Web tools](https://home.joaquim.org/k5/) to manage your radio data (channels, settings, etc.) from your web browser. It works with this firmware.
 
 # Open re-implementation of the Quansheng UV-K5/K6/5R v2.1.27 firmware
 

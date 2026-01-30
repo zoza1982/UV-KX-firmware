@@ -122,14 +122,16 @@ void UART_LogSend(const void *pBuffer, uint32_t Size)
 
 void UART_printf(const char *str, ...)
 {
-	char text[256];
+	char text[128];
 	int  len;
-	
+
 	va_list va;
 	va_start(va, str);
 	len = vsnprintf(text, sizeof(text), str, va);
 	va_end(va);
 
+	if (len > (int)sizeof(text) - 1)
+		len = (int)sizeof(text) - 1;
+
 	UART_Send(text, len);
-	//UART_Send(text, strlen(text));
 }

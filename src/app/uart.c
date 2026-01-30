@@ -272,6 +272,9 @@ static void CMD_051B(const uint8_t *pBuffer)
     if (pCmd->Timestamp != Timestamp)
         return;
 
+    if (pCmd->Size > sizeof(Reply.Data.Data))
+        return;
+
     gSerialConfigCountDown_500ms = 12; // 6 sec
 
     #ifdef ENABLE_FMRADIO

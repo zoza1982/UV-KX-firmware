@@ -660,7 +660,10 @@ void RADIO_ApplyOffset(VFO_Info_t *pInfo)
             Frequency += pInfo->TX_OFFSET_FREQUENCY;
             break;
         case TX_OFFSET_FREQUENCY_DIRECTION_SUB:
-            Frequency -= pInfo->TX_OFFSET_FREQUENCY;
+            if (pInfo->TX_OFFSET_FREQUENCY <= Frequency)
+                Frequency -= pInfo->TX_OFFSET_FREQUENCY;
+            else
+                Frequency = 0;
             break;
     }
 

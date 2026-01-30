@@ -1209,10 +1209,12 @@ static const char* UI_MENU_GetOptionLinesForId(int menuId)
             len += snprintf(&buf[len], sizeof(gMenuListBuffer) - len,
                             "\n%u.%05u", frequency / 100000, frequency % 100000);
         }
-        char* name = NULL;
-        SETTINGS_FetchChannelName(name, gSubMenuSelection);
-        if (name != NULL) {
-            len += snprintf(&buf[len], sizeof(gMenuListBuffer) - len, "\n%.8s", name);
+        {
+            char name[11] = {0};
+            SETTINGS_FetchChannelName(name, gSubMenuSelection);
+            if (name[0] != '\0') {
+                len += snprintf(&buf[len], sizeof(gMenuListBuffer) - len, "\n%.8s", name);
+            }
         }
     }
     break;

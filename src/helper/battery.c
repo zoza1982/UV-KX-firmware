@@ -91,10 +91,14 @@ static_assert(
 
 unsigned int BATTERY_VoltsToPercent(const unsigned int voltage_10mV)
 {
+    if (gEeprom.BATTERY_TYPE >= ARRAY_SIZE(Voltage2PercentageTable))
+        return 0;
     const uint16_t (*crv)[3] = Voltage2PercentageTable[gEeprom.BATTERY_TYPE];
     const int mulipl = 1000;
     for (unsigned int i = 1; i < ARRAY_SIZE(Voltage2PercentageTable[BATTERY_TYPE_2200_MAH]); i++) {
         if (voltage_10mV > crv[i][0]) {
+            if (crv[i - 1][0] == crv[i][0])
+                continue;
             const int a = (crv[i - 1][1] - crv[i][1]) * mulipl / (crv[i - 1][0] - crv[i][0]);
             const int b = crv[i][1] - a * crv[i][0] / mulipl;
             const int p = a * voltage_10mV / mulipl + b;

@@ -491,15 +491,12 @@ static void CMD_0602_WriteBK4819Reg(const uint8_t *pBuffer)
 #endif
 
 #if defined(ENABLE_MESSENGER) || defined(ENABLE_MESSENGER_UART)
-void remove(char cstring[], char letter) {
-    for(int i = 0; cstring[i] != '\0'; i++) {
-        if(cstring[i] == letter) cstring[i] = '\0';
-    } 
-}
 bool findchar(uint8_t start, char letter) {
-    for(int i = start; UART_DMA_Buffer[i] != '\0'; i++) {
-        if(UART_DMA_Buffer[i] == letter) return true;
-    } 
+    for(uint16_t i = 0; i < sizeof(UART_DMA_Buffer); i++) {
+        uint16_t idx = DMA_INDEX(start, i);
+        if(UART_DMA_Buffer[idx] == '\0') return false;
+        if(UART_DMA_Buffer[idx] == letter) return true;
+    }
 	return false;
 }
 
@@ -524,20 +521,24 @@ bool UART_IsCommandAvailable(void)
 
 #if defined(ENABLE_MESSENGER) || defined(ENABLE_MESSENGER_UART)
 
-		if ( UART_DMA_Buffer[gUART_WriteIndex] == 'S' && UART_DMA_Buffer[gUART_WriteIndex + 1] == 'M' && UART_DMA_Buffer[ gUART_WriteIndex + 2] == 'S' && UART_DMA_Buffer[gUART_WriteIndex + 3] == ':') {
+		if ( UART_DMA_Buffer[DMA_INDEX(gUART_WriteIndex, 0)] == 'S' && UART_DMA_Buffer[DMA_INDEX(gUART_WriteIndex, 1)] == 'M' && UART_DMA_Buffer[DMA_INDEX(gUART_WriteIndex, 2)] == 'S' && UART_DMA_Buffer[DMA_INDEX(gUART_WriteIndex, 3)] == ':') {
 			txtStart = gUART_WriteIndex;
 			newTxtMsg = true;
-			//UART_printf("1:%s\r\n", &UART_DMA_Buffer[txtStart]);
 		}
 
-		if (findchar(txtStart, '\n') && newTxtMsg) {
-			//UART_printf("2:%s\r\n", &UART_DMA_Buffer[txtStart]);
+		if (newTxtMsg && findchar(txtStart, '\n')) {
 			char txMessage[TX_MSG_LENGTH + 4];
 			memset(txMessage, 0, sizeof(txMessage));
-			snprintf(txMessage, (TX_MSG_LENGTH + 4), "%s", &UART_DMA_Buffer[txtStart + 4]);
-
-			remove(txMessage, '\n');
-			remove(txMessage, '\r');      
+			// Copy from circular buffer starting after "SMS:" prefix
+			{
+				uint16_t src = DMA_INDEX(txtStart, 4);
+				size_t j = 0;
+				while (j < sizeof(txMessage) - 1 && UART_DMA_Buffer[src] != '\0' && UART_DMA_Buffer[src] != '\n' && UART_DMA_Buffer[src] != '\r') {
+					txMessage[j++] = UART_DMA_Buffer[src];
+					src = DMA_INDEX(src, 1);
+				}
+				txMessage[j] = '\0';
+			}
 
 			if (strlen(txMessage) > 0) {        
 				MSG_Send(txMessage, false);

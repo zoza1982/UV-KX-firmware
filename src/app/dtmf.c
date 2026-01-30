@@ -262,7 +262,7 @@ void DTMF_HandleRequest(void)
     if (gDTMF_RX_index >= 9)
     {   // look for the KILL code
 
-        sprintf(String, "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, gEeprom.KILL_CODE);
+        snprintf(String, sizeof(String), "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, gEeprom.KILL_CODE);
 
         Offset = gDTMF_RX_index - strlen(String);
 
@@ -303,7 +303,7 @@ void DTMF_HandleRequest(void)
     if (gDTMF_RX_index >= 9)
     {   // look for the REVIVE code
 
-        sprintf(String, "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, gEeprom.REVIVE_CODE);
+        snprintf(String, sizeof(String), "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, gEeprom.REVIVE_CODE);
 
         Offset = gDTMF_RX_index - strlen(String);
 
@@ -351,7 +351,7 @@ void DTMF_HandleRequest(void)
         gDTMF_RX_index >= 9)
     {   // waiting for a reply
 
-        sprintf(String, "%s%c%s", gDTMF_String, gEeprom.DTMF_SEPARATE_CODE, "AAAAA");
+        snprintf(String, sizeof(String), "%s%c%s", gDTMF_String, gEeprom.DTMF_SEPARATE_CODE, "AAAAA");
 
         Offset = gDTMF_RX_index - strlen(String);
 
@@ -373,7 +373,7 @@ void DTMF_HandleRequest(void)
 
         gDTMF_IsGroupCall = false;
 
-        sprintf(String, "%s%c", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE);
+        snprintf(String, sizeof(String), "%s%c", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE);
 
         Offset = gDTMF_RX_index - strlen(String) - 3;
 
@@ -430,7 +430,7 @@ void DTMF_Reply(void)
 #ifdef ENABLE_DTMF_CALLING
             if (gDTMF_CallMode != DTMF_CALL_MODE_DTMF)
             {   // append our ID code onto the end of the DTMF code to send
-                sprintf(String, "%s%c%s", gDTMF_String, gEeprom.DTMF_SEPARATE_CODE, gEeprom.ANI_DTMF_ID);
+                snprintf(String, sizeof(String), "%s%c%s", gDTMF_String, gEeprom.DTMF_SEPARATE_CODE, gEeprom.ANI_DTMF_ID);
                 pString = String;
             }
             else
@@ -446,7 +446,7 @@ void DTMF_Reply(void)
             break;
 
         case DTMF_REPLY_AAAAA:
-            sprintf(String, "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, "AAAAA");
+            snprintf(String, sizeof(String), "%s%c%s", gEeprom.ANI_DTMF_ID, gEeprom.DTMF_SEPARATE_CODE, "AAAAA");
             pString = String;
             break;
 #endif

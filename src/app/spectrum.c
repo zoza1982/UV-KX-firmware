@@ -828,6 +828,10 @@ static void UpdateFreqInput(KEY_Code_t key)
     }
     if (key == KEY_EXIT)
     {
+        if (freqInputIndex == 0)
+        {
+            return;
+        }
         freqInputIndex--;
         if (freqInputDotIndex == freqInputIndex)
             freqInputDotIndex = 0;

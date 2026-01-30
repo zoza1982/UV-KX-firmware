@@ -751,7 +751,13 @@ void MSG_StorePacket(const uint16_t interrupt_bits) {
 						UART_printf("SVC<RCPT\n");
 					}
 					#endif
-					rxMessage[MAX_LINES - 1][strlen(rxMessage[MAX_LINES - 1])] = '+';
+					{
+						const size_t len = strlen(rxMessage[MAX_LINES - 1]);
+						if (len < sizeof(rxMessage[MAX_LINES - 1]) - 1) {
+							rxMessage[MAX_LINES - 1][len] = '+';
+							rxMessage[MAX_LINES - 1][len + 1] = '\0';
+						}
+					}
 					gUpdateStatus = true;
 					gUpdateDisplay = true;
 				}

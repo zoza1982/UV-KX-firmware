@@ -23,7 +23,6 @@ enum {
 };
 
 #define MAX_LINES 6
-#define NEXT_CHAR_DELAY 100 // 10ms tick
 
 //const uint8_t TX_MSG_LENGTH = 30;
 //const uint8_t MAX_RX_MSG_LENGTH = TX_MSG_LENGTH + 2;
@@ -32,7 +31,6 @@ extern char gLastRxStationId[17];
 extern uint8_t gLastRxStationIdLen;
 
 extern KeyboardType keyboardType;
-extern uint16_t gErrorsDuringMSG;
 extern char cMessage[TX_MSG_LENGTH];
 extern char rxMessage[MAX_LINES][MAX_RX_MSG_LENGTH + 2];
 extern uint8_t hasNewMessage;

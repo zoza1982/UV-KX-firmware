@@ -53,8 +53,6 @@ static uint8_t gStationIdLen;
 char gLastRxStationId[17];
 uint8_t gLastRxStationIdLen;
 
-uint16_t gErrorsDuringMSG;
-
 uint8_t hasNewMessage = 0;
 
 uint8_t keyTickCounter = 0;
@@ -585,27 +583,6 @@ void MSG_Send(const char *txMessage, bool bServiceMessage) {
 
 	const size_t user_len = strnlen(txMessage, TX_MSG_LENGTH);
 	if ( user_len > 0 && (TX_freq_check(gCurrentVfo->pTX->Frequency) == 0) ) {
-		char prefixed[TX_MSG_LENGTH] = {0};
-		//const char *payload = txMessage;
-
-		/*if (!bServiceMessage && gStationIdLen > 0) {
-			size_t pos = 0;
-			const size_t max_len = TX_MSG_LENGTH - 1;
-			const size_t copy_id = (gStationIdLen < max_len) ? gStationIdLen : max_len;
-			memcpy(prefixed, gStationId, copy_id);
-			pos = copy_id;
-			if (pos < max_len) {
-				prefixed[pos++] = '>';
-			}
-			if (pos < max_len) {
-				const size_t copy_msg = (user_len < (max_len - pos)) ? user_len : (max_len - pos);
-				memcpy(prefixed + pos, txMessage, copy_msg);
-			}
-			payload = prefixed;
-		}*/
-
-		//const size_t msg_len = strnlen(txMessage, TX_MSG_LENGTH);
-
 		msgStatus = SENDING;
 
 		RADIO_SetVfoState(VFO_STATE_NORMAL);

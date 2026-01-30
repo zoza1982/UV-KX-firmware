@@ -989,10 +989,10 @@ static void DrawSpectrum()
 static void DrawStatus()
 {
 #ifdef SPECTRUM_EXTRA_VALUES
-    sprintf(String, "%d/%d P:%d T:%d", settings.dbMin, settings.dbMax,
+    snprintf(String, sizeof(String), "%d/%d P:%d T:%d", settings.dbMin, settings.dbMax,
         Rssi2DBm(peak.rssi), Rssi2DBm(settings.rssiTriggerLevel));
 #else
-    sprintf(String, "%d/%d", settings.dbMin, settings.dbMax);
+    snprintf(String, sizeof(String), "%d/%d", settings.dbMin, settings.dbMax);
 #endif
     BOARD_ADC_GetBatteryInfo(&gBatteryVoltages[gBatteryCheckCounter++ % 4],
         &gBatteryCurrent);
@@ -1115,12 +1115,12 @@ static void DrawNums()
 #ifdef ENABLE_SCAN_RANGES
         if (gScanRangeStart)
         {
-            sprintf(String, "%uX", GetStepsCountDisplay());
+            snprintf(String, sizeof(String), "%uX", GetStepsCountDisplay());
         }
         else
 #endif
         {
-            sprintf(String, "%uX", GetStepsCount());
+            snprintf(String, sizeof(String), "%uX", GetStepsCount());
         }
 
         //UI_DrawString(UI_TEXT_ALIGN_LEFT, 0, 0, 48, true, false, false, String);
@@ -1473,7 +1473,7 @@ static void RenderSpectrum()
 
     int dbm = Rssi2DBm(scanInfo.rssi);
     uint8_t s = DBm2S(dbm);
-    sprintf(String, "S: %u", s);
+    snprintf(String, sizeof(String), "S: %u", s);
     UI_SetFont(UI_FONT_8_TR);
     UI_DrawString(UI_TEXT_ALIGN_LEFT, 5, 0, 20, true, false, false, String);
     UI_DrawStringf(UI_TEXT_ALIGN_LEFT, 45, 0, 20, true, false, false,

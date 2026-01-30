@@ -454,8 +454,10 @@ uint16_t GetRssi()
 {
     // SYSTICK_DelayUs(800);
     // testing autodelay based on Glitch value
-    while ((BK4819_ReadRegister(0x63) & 0b11111111) >= 255)
+    for (uint8_t timeout = 0; timeout < 100; timeout++)
     {
+        if ((BK4819_ReadRegister(0x63) & 0xFF) < 255)
+            break;
         SYSTICK_DelayUs(100);
     }
     uint16_t rssi = BK4819_GetRSSI();

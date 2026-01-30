@@ -25,7 +25,6 @@
 #ifdef ENABLE_MESSENGER
 	#include "app/messenger.h"
 #endif
-#include "bitmaps.h"
 #include "board.h"
 #include "driver/bk4819.h"
 //#include "driver/st7565.h"
@@ -100,6 +99,8 @@ static const uint8_t kBarHollow[]     = {0b01111111, 0b01000001, 0b01000001, 0b0
 #endif
 #endif
 */
+static const uint8_t BITMAP_Antenna[5] = {0x03, 0x05, 0x7F, 0x05, 0x03};
+
 static void DrawSmallAntennaAndBars(uint8_t *p, unsigned int level)
 {
     if(level>6)

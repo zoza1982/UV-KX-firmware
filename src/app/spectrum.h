@@ -17,7 +17,6 @@
 #ifndef SPECTRUM_H
 #define SPECTRUM_H
 
-#include "bitmaps.h"
 #include "board.h"
 #include "gpio.h"
 #include "driver/bk4819-regs.h"

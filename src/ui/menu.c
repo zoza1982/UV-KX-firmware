@@ -20,7 +20,6 @@
 
 #include "app/dtmf.h"
 #include "app/menu.h"
-#include "bitmaps.h"
 #include "board.h"
 #include "dcs.h"
 #include "driver/backlight.h"
@@ -35,7 +34,6 @@
 #ifdef ENABLE_FEAT_F4HWN
 #include "version.h"
 #endif
-#include "helper.h"
 #include "inputbox.h"
 #include "menu.h"
 #include "ui.h"
